@@ -1,9 +1,12 @@
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter
+from reportlab.lib.units import inch
 
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
+WIDTH, HEIGHT = letter
 
-
-# Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
+    c = canvas.Canvas("test.pdf", pagesize=letter)
+    c.drawString(100, 100, "Hello World")
+    c.showPage()
+    c.save()
+
