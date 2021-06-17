@@ -1,6 +1,7 @@
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
+from datetime import date
 
 WIDTH, HEIGHT = letter
 
@@ -20,20 +21,24 @@ wsp_logo = "images/wsplogo.png"
 styleN = styles["Normal"]
 styleT = styles["Title"]
 
+
 # formatting for the first page
 def first_page_format(canvas, doc):
     canvas.saveState()
 
     # setup header
-    canvas.drawImage(mbta_logo, .5*inch, HEIGHT-.25*inch, width=100, height=45)
-    canvas.drawImage(wsp_logo, WIDTH-2*inch, HEIGHT-.25*inch, width=100, height=45)
+    canvas.drawImage(mbta_logo, .25*inch, HEIGHT-.25*inch, width=100, height=50)
+    canvas.drawImage(wsp_logo, WIDTH-2*inch, HEIGHT-.25*inch, width=100, height=50)
     p = Paragraph("MBTA TUNNEL VENTILATION FACILITY AND SYSTEM ASSESSMENT", styleT)
     w, h = p.wrap(inch*5, HEIGHT)
     p.drawOn(canvas, WIDTH/2-w/2, HEIGHT-.25-h/2)
 
     # setup footer
     canvas.setFont('Times-Roman',9)
-    canvas.drawString(inch, 0.75 * inch, "Page %d" % doc.page)
+    canvas.drawString(inch, .75*inch, "%s" % date.today().strftime("%m/%d/%Y"))
+    canvas.drawCentredString(WIDTH/2, .75*inch, "Page %d" % doc.page)
+    canvas.drawRightString(WIDTH - inch, .90*inch, "Contract No. Z94PS10")
+    canvas.drawRightString(WIDTH - inch, .75*inch, "Task Order: 03")
     canvas.restoreState()
 
 
@@ -57,7 +62,7 @@ def build_document():
         bogustext = ("This is Paragraph number %s. " % i) * 20
         p = Paragraph(bogustext, styleN)
         Story.append(p)
-        Story.append(Image("images/10366.png", width=20, height=20))
+        # Story.append(Image("images/10366.png", width=20, height=20))
         Story.append(Spacer(1,0.2*inch))
     doc.build(Story, onFirstPage=first_page_format, onLaterPages=first_page_format)
 
