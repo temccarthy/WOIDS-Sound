@@ -25,29 +25,39 @@ class Equipment():
         self.descr = descr
         self.sol_title = sol_title
         self.sol_text = sol_text
-        self.image_path = image_path
+        self.image_path = image_path  # auto calculate?
 
 
 def create_table(equip):
     image = Image(equip.image_path)
+    image._restrictSize(2*inch, 3*inch)
+    descr_p = Paragraph(equip.descr)
+    descr_p.wrap(4.75*inch, HEIGHT) # HEIGHT?
+    sol_text_p = Paragraph(equip.sol_text)
+    sol_text_p.wrap(4.75 * inch, HEIGHT)  # HEIGHT?
     data =[[equip.id, "Room:", equip.room, "Equipment ID:", equip.equipment_id, "CS:", equip.cs],
            [equip.title, "", "", "", image],
-           [equip.descr],
-           [],
+           [descr_p],
            [equip.sol_title],
-           [equip.sol_text],
-           [],
+           [sol_text_p],
            ]
-    t = Table(data, style=[('BOX', (0, 0), (-1, -1), 1, colors.black),
+    t = Table(data, style=[('ALIGN', (0, 0), (-1, 0), 'CENTER'),  # align top row centered
+                           ('ALIGN', (0, 1), (-1, 1), 'CENTER'),  # align title and photo
+                           ('ALIGN', (0, 3), (0, 3), 'CENTER'),  # align solution title centered
+                           ('VALIGN', (0, 2), (0, 2), 'TOP'),
+                           ('VALIGN', (0, 4), (0, 4), 'TOP'),
+                           ('VALIGN', (4, 1), (-1, -1), 'CENTER'),
+                           ('BOX', (0, 0), (-1, -1), 1, colors.black),
                            ('BOX', (0, 0), (-1, 0), 1, colors.black),
-                           ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                           ('GRID', (0, 1), (3, -1), 1, colors.black),
                            ('SPAN', (0, 1), (3, 1)),
-                           ('SPAN', (0, 2), (3, 3)),
+                           ('SPAN', (0, 2), (3, 2)),
+                           ('SPAN', (0, 3), (3, 3)),
                            ('SPAN', (0, 4), (3, 4)),
-                           ('SPAN', (0, 5), (3, 6)),
                            ('SPAN', (-3, 1), (-1, -1)),
-                           ])
-    # t._argW[3] = 2*inch
+                           ],
+              colWidths=[.25*inch, .5*inch, 3*inch, inch, 1.75*inch, .25*inch, .25*inch],
+              rowHeights=[.25*inch, .25*inch, 1.25*inch, .25*inch, 1.25*inch])
     return t
 
 # formatting for the first page
@@ -89,7 +99,7 @@ def build_document():
 
     for i in range(10):
         e = Equipment("E", 1, "EF-2 EXHAUST PLENUM", "PUSHBUTTON", 3, "CORROSION",
-                      "PUSHBUTTONS IS CORRODED, DEVICE IS STILL OPERATION, BUT SHOULD BE MONITORED.",
+                      "PUSHBUTTON IS CORRODED, DEVICE IS STILL OPERATIONAL, BUT SHOULD BE MONITORED.",
                       "MONITOR", "MONITOR DEVICE OVER COMING YEARS", "images/pushbutton.png")
         t = create_table(e)
         Story.append(t)
