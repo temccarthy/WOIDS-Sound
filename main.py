@@ -2,18 +2,22 @@ from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Frame, PageTemplate, Table, KeepTogether
-from reportlab.lib.styles import getSampleStyleSheet
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from datetime import date
 
 WIDTH, HEIGHT = letter
 styles = getSampleStyleSheet()
-mbta_logo = "images/mbtalogo.png"
-wsp_logo = "images/wsplogo.png"
+mbta_logo = "images/MBTA_logo_text.png"
+wsp_logo = "images/img-png-wsp-red.png"
 styleN = styles["Normal"]
-styleT = styles["Title"]
+styleT = ParagraphStyle(
+    'newTitle',
+    parent=styles['Title'],
+    fontSize=14
+)
 
 
-class Equipment():
+class Equipment:
     def __init__(self, discipline, num, room, equipment_id, cs, title, descr, sol_title, sol_text, image_path):
         self.discipline = discipline
         self.num = num
@@ -68,18 +72,18 @@ def first_page_format(canvas, doc):
     canvas.saveState()
 
     # setup header
-    canvas.drawImage(mbta_logo, .25*inch, HEIGHT-.25*inch, width=100, height=50)
-    canvas.drawImage(wsp_logo, WIDTH-2*inch, HEIGHT-.25*inch, width=100, height=50)
+    canvas.drawImage(mbta_logo, .45*inch, HEIGHT-.05*inch, width=100, height=19)
+    canvas.drawImage(wsp_logo, WIDTH-1.65*inch, HEIGHT-.2*inch, width=70, height=33)
     p = Paragraph("MBTA TUNNEL VENTILATION FACILITY AND SYSTEM ASSESSMENT", styleT)
-    w, h = p.wrap(inch*5, HEIGHT)
-    p.drawOn(canvas, WIDTH/2-w/2, HEIGHT-.25-h/2)
+    w, h = p.wrap(inch*4, HEIGHT)
+    p.drawOn(canvas, (WIDTH-16)/2-w/2, HEIGHT-.25-h/2)
 
     # setup footer
     canvas.setFont('Times-Roman',9)
     canvas.drawString(.75*inch, .75*inch, "%s" % date.today().strftime("%m/%d/%Y"))
-    canvas.drawCentredString(WIDTH/2, .75*inch, "Page %d" % doc.page)
-    canvas.drawRightString(WIDTH - inch, .90*inch, "Contract No. Z94PS10")
-    canvas.drawRightString(WIDTH - inch, .75*inch, "Task Order: 03")
+    canvas.drawCentredString((WIDTH-16)/2, .75*inch, "Page %d" % doc.page)
+    canvas.drawRightString(WIDTH-inch, .90*inch, "Contract No. Z94PS10")
+    canvas.drawRightString(WIDTH-inch, .75*inch, "Task Order: 03")
     canvas.restoreState()
 
 
@@ -106,7 +110,6 @@ def build_document():
                       "MONITOR", "MONITOR DEVICE OVER COMING YEARS", "images/pushbutton.png")
         t = create_table(e)
         Story.append(KeepTogether(t))
-        # Story.append(Image("images/10366.png", width=20, height=20))
         Story.append(Spacer(1,0.1*inch))
     doc.build(Story, onFirstPage=first_page_format, onLaterPages=first_page_format)
 
