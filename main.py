@@ -1,7 +1,7 @@
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Frame, PageTemplate, Table
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Frame, PageTemplate, Table, KeepTogether
 from reportlab.lib.styles import getSampleStyleSheet
 from datetime import date
 
@@ -30,12 +30,13 @@ class Equipment():
 
 def create_table(equip):
     image = Image(equip.image_path)
-    image._restrictSize(2*inch, 3*inch)
+    image._restrictSize(2*inch, 2.5*inch)
     descr_p = Paragraph(equip.descr)
     descr_p.wrap(4.75*inch, HEIGHT) # HEIGHT?
     sol_text_p = Paragraph(equip.sol_text)
     sol_text_p.wrap(4.75 * inch, HEIGHT)  # HEIGHT?
-    data =[[equip.id, "Room:", equip.room, "Equipment ID:", equip.equipment_id, "CS:", equip.cs],
+    data =[["  " + equip.id, Paragraph('<b>Room:</b>'), equip.room, Paragraph('<b>Equipment ID:</b>'), equip.equipment_id,
+            Paragraph('<b>CS:</b> %d' % equip.cs)],
            [equip.title, "", "", "", image],
            [descr_p],
            [equip.sol_title],
@@ -50,14 +51,16 @@ def create_table(equip):
                            ('BOX', (0, 0), (-1, -1), 1, colors.black),
                            ('BOX', (0, 0), (-1, 0), 1, colors.black),
                            ('GRID', (0, 1), (3, -1), 1, colors.black),
-                           ('SPAN', (0, 1), (3, 1)),
-                           ('SPAN', (0, 2), (3, 2)),
-                           ('SPAN', (0, 3), (3, 3)),
-                           ('SPAN', (0, 4), (3, 4)),
-                           ('SPAN', (-3, 1), (-1, -1)),
+                           ('SPAN', (0, 1), (3, 1)),  # span title
+                           ('SPAN', (0, 2), (3, 2)),  # span descr
+                           ('SPAN', (0, 3), (3, 3)),  # span sol title
+                           ('SPAN', (0, 4), (3, 4)),  # span sol descr
+                           ('SPAN', (-2, 1), (-1, -1)),  # span picture box
+                           ('BACKGROUND', (0, 1), (3, 1), colors.pink),
+                           ('BACKGROUND', (0, 3), (3, 3), colors.lightgreen),
                            ],
-              colWidths=[.25*inch, .5*inch, 3*inch, inch, 1.75*inch, .25*inch, .25*inch],
-              rowHeights=[.25*inch, .25*inch, 1.25*inch, .25*inch, 1.25*inch])
+              colWidths=[.25*inch, .75*inch, 2.5*inch, 1.25*inch, 1.9*inch, .6*inch],
+              rowHeights=[.25*inch, .25*inch, 1.25*inch, .25*inch, 1*inch])
     return t
 
 # formatting for the first page
@@ -73,7 +76,7 @@ def first_page_format(canvas, doc):
 
     # setup footer
     canvas.setFont('Times-Roman',9)
-    canvas.drawString(inch, .75*inch, "%s" % date.today().strftime("%m/%d/%Y"))
+    canvas.drawString(.75*inch, .75*inch, "%s" % date.today().strftime("%m/%d/%Y"))
     canvas.drawCentredString(WIDTH/2, .75*inch, "Page %d" % doc.page)
     canvas.drawRightString(WIDTH - inch, .90*inch, "Contract No. Z94PS10")
     canvas.drawRightString(WIDTH - inch, .75*inch, "Task Order: 03")
@@ -102,9 +105,9 @@ def build_document():
                       "PUSHBUTTON IS CORRODED, DEVICE IS STILL OPERATIONAL, BUT SHOULD BE MONITORED.",
                       "MONITOR", "MONITOR DEVICE OVER COMING YEARS", "images/pushbutton.png")
         t = create_table(e)
-        Story.append(t)
+        Story.append(KeepTogether(t))
         # Story.append(Image("images/10366.png", width=20, height=20))
-        Story.append(Spacer(1,0.2*inch))
+        Story.append(Spacer(1,0.1*inch))
     doc.build(Story, onFirstPage=first_page_format, onLaterPages=first_page_format)
 
 
