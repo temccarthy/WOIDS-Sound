@@ -23,11 +23,15 @@ styleT = styles["Title"]
 # formatting for the first page
 def first_page_format(canvas, doc):
     canvas.saveState()
+
+    # setup header
     canvas.drawImage(mbta_logo, .5*inch, HEIGHT-.25*inch, width=100, height=45)
     canvas.drawImage(wsp_logo, WIDTH-2*inch, HEIGHT-.25*inch, width=100, height=45)
     p = Paragraph("MBTA TUNNEL VENTILATION FACILITY AND SYSTEM ASSESSMENT", styleT)
-    w,h = p.wrap(inch*5, HEIGHT)
+    w, h = p.wrap(inch*5, HEIGHT)
     p.drawOn(canvas, WIDTH/2-w/2, HEIGHT-.25-h/2)
+
+    # setup footer
     canvas.setFont('Times-Roman',9)
     canvas.drawString(inch, 0.75 * inch, "Page %d" % doc.page)
     canvas.restoreState()
