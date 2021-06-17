@@ -16,6 +16,12 @@ styleT = ParagraphStyle(
     fontSize=14
 )
 
+class LocationInfo:
+    def __init__(self, rail, location, insp_date):
+        self.rail = rail
+        self.location = location
+        self.insp_date = insp_date
+
 
 class Equipment:
     def __init__(self, discipline, num, room, equipment_id, cs, title, descr, sol_title, sol_text, image_path):
@@ -32,7 +38,7 @@ class Equipment:
         self.image_path = image_path  # auto calculate?
 
 
-def create_table(equip):
+def create_equipment_table(equip):
     image = Image(equip.image_path)
     image._restrictSize(2*inch, 2.5*inch)
     descr_p = Paragraph(equip.descr)
@@ -67,6 +73,15 @@ def create_table(equip):
               rowHeights=[.25*inch, .25*inch, 1.25*inch, .25*inch, 1*inch])
     return t
 
+
+def create_report_table(loc):
+    data =[[Paragraph('<b>RAIL LINE:</b> %s' % loc.rail), Paragraph('<b>INSPECTION DATE:</b> %s' % loc.insp_date)], # change date data type?
+           [Paragraph('<b>LOCATION:</b> %s' % loc.location)],
+           ]
+    t = Table(data)
+    return t
+
+
 # formatting for the first page
 def first_page_format(canvas, doc):
     canvas.saveState()
@@ -98,19 +113,21 @@ def first_page_format(canvas, doc):
 def build_document():
     doc = SimpleDocTemplate("MBTA Tunnel Vent and System Assessment.pdf", pageSize=letter,
                             title="MBTA Tunnel Vent and System Assessment", author="WSP")  # start document template
-    # frame = Frame(doc.leftMargin, doc.bottomMargin, doc.width, doc.height, id='normal')  # frame for doc margins
-    # template = PageTemplate(id="test", frames=frame)
-    # doc.addPageTemplates([template])
-
     Story = []
 
-    for i in range(10):
+    t = create_report_table(LocationInfo("RED LINE", "Vent Shaft R-13 (Cabot Yard)", "5/8/2021"))
+    Story.append(t) # add location information
+    Story.append(Spacer(1, 0.1 * inch))
+
+    for i in range(10): # for row in spreadsheet
         e = Equipment("E", 1, "EF-2 EXHAUST PLENUM", "PUSHBUTTON", 3, "CORROSION",
-                      "PUSHBUTTON IS CORRODED, DEVICE IS STILL OPERATIONAL, BUT SHOULD BE MONITORED.",
-                      "MONITOR", "MONITOR DEVICE OVER COMING YEARS", "images/pushbutton.png")
-        t = create_table(e)
+                      "PUSHBUTTON IS CORRODED. DEVICE IS STILL OPERATIONAL, BUT SHOULD BE MONITORED.",
+                      "MONITOR", "MONITOR DEVICE OVER COMING YEARS", "images/pushbutton.png")  # get from sheet
+        t = create_equipment_table(e)
+
         Story.append(KeepTogether(t))
         Story.append(Spacer(1,0.1*inch))
+
     doc.build(Story, onFirstPage=first_page_format, onLaterPages=first_page_format)
 
 
