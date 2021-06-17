@@ -117,7 +117,7 @@ def build_document():
 
     t = create_report_table(LocationInfo("RED LINE", "Vent Shaft R-13 (Cabot Yard)", "5/8/2021"))
     Story.append(t) # add location information
-    Story.append(Spacer(1, 0.1 * inch))
+    Story.append(Spacer(1, 0.2 * inch))
 
     for i in range(10): # for row in spreadsheet
         e = Equipment("E", 1, "EF-2 EXHAUST PLENUM", "PUSHBUTTON", 3, "CORROSION",
