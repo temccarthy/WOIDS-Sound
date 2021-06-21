@@ -1,6 +1,9 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, QFileDialog
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, QFileDialog, QLabel
 from PyQt5 import uic
 import sys
+from spreadsheet import Sheet
+
+error_text = '<html><head/><body><p><span style=" color:#ef0000;">ERROR: Spreadsheet not found</span></p></body></html>'
 
 
 class MainWindow(QMainWindow):
@@ -10,7 +13,8 @@ class MainWindow(QMainWindow):
 
         # connect widgets to python
         self.browse_button = self.findChild(QPushButton, "browse_button")
-        self.folder_path_line = self.findChild(QLineEdit, "folder_path")
+        self.sheet_error_label = self.findChild(QLabel, "sheet_error_label")
+        self.file_path_line = self.findChild(QLineEdit, "folder_path")
         self.check_button = self.findChild(QPushButton, "check_button")
         self.generate_button = self.findChild(QPushButton, "generate_button")
         self.template_button = self.findChild(QPushButton, "template_button")
@@ -24,8 +28,15 @@ class MainWindow(QMainWindow):
         self.show()
 
     def browse_folders(self):
-        path = QFileDialog.getExistingDirectory(self, "Select the folder containing the spreadsheet")
-        self.folder_path_line.setText(path)
+        path = QFileDialog.getOpenFileName(self, "Select the spreadsheet", "E:/WSP/5.17/RED LINE/CABOT (R-13)")
+        self.file_path_line.setText(path[0])
+
+        try:
+            Sheet(path[0])
+            self.sheet_error_label.setText("")
+        except ValueError:  # what error
+            self.sheet_error_label.setText(error_text)
+            print("sheet not found")
 
     def check_folders(self):
         pass
