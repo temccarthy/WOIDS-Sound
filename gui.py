@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, QFileDialog
 from PyQt5 import uic
 import sys
 
@@ -24,13 +24,14 @@ class MainWindow(QMainWindow):
         self.show()
 
     def browse_folders(self):
-        print(self.folder_path_line.text())
+        path = QFileDialog.getExistingDirectory(self, "Select the folder containing the spreadsheet")
+        self.folder_path_line.setText(path)
 
     def check_folders(self):
-        self.folder_path_line.setText("test")
         pass
 
     def generate_report(self):
+        self.check_folders()
         pass
 
     def generate_template(self):
@@ -40,4 +41,4 @@ class MainWindow(QMainWindow):
 if __name__ == "__main__":
     app = QApplication(sys.argv)
     window = MainWindow()
-    app.exec()
+    sys.exit(app.exec())
