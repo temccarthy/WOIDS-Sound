@@ -30,7 +30,8 @@ class MainWindow(QMainWindow):
         self.show()
 
     def browse_folders(self):
-        path = QFileDialog.getOpenFileName(self, "Select the spreadsheet", "E:/WSP/5.17/RED LINE/CABOT (R-13)") # NO DEFAULT CHANGE LATER
+        # TODO: change default file location
+        path = QFileDialog.getOpenFileName(self, "Select the spreadsheet", "E:/WSP/5.17/RED LINE/CABOT (R-13)")
         self.file_path_line.setText(path[0])
 
         try:
@@ -41,18 +42,23 @@ class MainWindow(QMainWindow):
             self.sheet = None
 
     def check_folders(self):
-        if self.sheet is not None:
-            missing_pics = self.sheet.check_files()
+        if self.sheet is not None:  # if sheet is loaded
+            missing_pics = self.sheet.check_pictures()
             print(missing_pics)
+
+            # TODO: display list of missing pictures
+            # TODO: checkmark if none missing?
         else:
-            pass # error popup - sheet not found
+            pass  # TODO: error popup - sheet not found
 
     def generate_report(self):
         self.check_folders()
-        pass
+        pass  # TODO: call Document
 
     def generate_template(self):
         pass
+        # TODO: make template sheet
+        # TODO: copy paste on fcn call
 
 
 if __name__ == "__main__":

@@ -38,7 +38,7 @@ class Sheet:
                 break
         self.df = pd.read_excel(path, skiprows=skip)
 
-    def check_files(self):
+    def check_pictures(self):
         missing_pics = []
 
         for row in self.df.itertuples():
