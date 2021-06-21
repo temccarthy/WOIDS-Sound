@@ -1,4 +1,5 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, QFileDialog, QLabel, QTextBrowser
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, QFileDialog, QLabel, QTextBrowser, \
+    QErrorMessage
 from PyQt5 import uic
 import sys
 from spreadsheet import Sheet
@@ -32,6 +33,7 @@ class MainWindow(QMainWindow):
 
     def browse_folders(self):
         # TODO: change default file location
+        # TODO: crash on canceling file
         path = QFileDialog.getOpenFileName(self, "Select the spreadsheet", "E:/WSP/5.17/RED LINE/CABOT (R-13)")
         self.file_path_line.setText(path[0])
 
@@ -55,11 +57,19 @@ class MainWindow(QMainWindow):
                 self.info_box.setText(text)
             else:  # if all pictures exist
                 self.info_box.setText("All entries have a matching picture :)")
+                return 1
         else:
-            pass  # TODO: error popup - sheet not found
+            error_dialog = QErrorMessage()
+            error_dialog.setWindowTitle("Error")
+            error_dialog.showMessage("Please select an appropriate spreadsheet")
+
+            error_dialog.exec()
+
+        return 0
 
     def generate_report(self):
-        self.check_folders()
+        if self.check_folders():
+            pass
         # TODO: call Document
         # TODO: overwrite confirmation
 
