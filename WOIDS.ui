@@ -20,7 +20,7 @@
       <x>0</x>
       <y>0</y>
       <width>400</width>
-      <height>400</height>
+      <height>330</height>
      </rect>
     </property>
     <property name="sizePolicy">
@@ -71,7 +71,7 @@
         <item>
          <widget class="QLabel" name="select_label">
           <property name="text">
-           <string>Select the spreadsheet:</string>
+           <string>Select your spreadsheet:</string>
           </property>
          </widget>
         </item>
@@ -110,7 +110,7 @@
     <widget class="QLabel" name="label_4">
      <property name="geometry">
       <rect>
-       <x>250</x>
+       <x>240</x>
        <y>250</y>
        <width>150</width>
        <height>76</height>
@@ -184,7 +184,7 @@
       <item row="0" column="1">
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>Checks that each entry in the spreadsheet has an associated picture</string>
+         <string>Check that each entry in the spreadsheet has an associated picture</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>
@@ -194,7 +194,7 @@
       <item row="1" column="1">
        <widget class="QLabel" name="label_3">
         <property name="text">
-         <string>Generates a PDF report</string>
+         <string>Generate a PDF report (also checks files)</string>
         </property>
         <property name="wordWrap">
          <bool>true</bool>

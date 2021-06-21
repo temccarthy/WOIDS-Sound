@@ -11,6 +11,8 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         uic.loadUi("WOIDS.ui", self)
 
+        self.sheet = None
+
         # connect widgets to python
         self.browse_button = self.findChild(QPushButton, "browse_button")
         self.error_label = self.findChild(QLabel, "error_label")
@@ -28,18 +30,22 @@ class MainWindow(QMainWindow):
         self.show()
 
     def browse_folders(self):
-        path = QFileDialog.getOpenFileName(self, "Select the spreadsheet", "E:/WSP/5.17/RED LINE/CABOT (R-13)")
+        path = QFileDialog.getOpenFileName(self, "Select the spreadsheet", "E:/WSP/5.17/RED LINE/CABOT (R-13)") # NO DEFAULT CHANGE LATER
         self.file_path_line.setText(path[0])
 
         try:
-            Sheet(path[0])
+            self.sheet = Sheet(path[0])
             self.error_label.setText("")
         except ValueError:
             self.error_label.setText(error_text)
-            print("sheet not found")
+            self.sheet = None
 
     def check_folders(self):
-        pass
+        if self.sheet is not None:
+            missing_pics = self.sheet.check_files()
+            print(missing_pics)
+        else:
+            pass # error popup - sheet not found
 
     def generate_report(self):
         self.check_folders()
