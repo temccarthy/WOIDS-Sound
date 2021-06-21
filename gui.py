@@ -13,7 +13,7 @@ class MainWindow(QMainWindow):
 
         # connect widgets to python
         self.browse_button = self.findChild(QPushButton, "browse_button")
-        self.sheet_error_label = self.findChild(QLabel, "sheet_error_label")
+        self.error_label = self.findChild(QLabel, "error_label")
         self.file_path_line = self.findChild(QLineEdit, "folder_path")
         self.check_button = self.findChild(QPushButton, "check_button")
         self.generate_button = self.findChild(QPushButton, "generate_button")
@@ -33,9 +33,9 @@ class MainWindow(QMainWindow):
 
         try:
             Sheet(path[0])
-            self.sheet_error_label.setText("")
-        except ValueError:  # what error
-            self.sheet_error_label.setText(error_text)
+            self.error_label.setText("")
+        except ValueError:
+            self.error_label.setText(error_text)
             print("sheet not found")
 
     def check_folders(self):
