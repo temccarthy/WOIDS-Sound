@@ -73,7 +73,7 @@ class MainWindow(QMainWindow):
     def generate_report(self):
         if self.check_folders():
             build_document(self.sheet)
-        # TODO: update info box
+            self.info_box.setText(self.info_box.toPlainText() + "Report generated!\n")
         # TODO: overwrite confirmation
 
     def generate_template(self):
