@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, QFileDialog, QLabel
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, QFileDialog, QLabel, QTextBrowser
 from PyQt5 import uic
 import sys
 from spreadsheet import Sheet
@@ -20,6 +20,7 @@ class MainWindow(QMainWindow):
         self.check_button = self.findChild(QPushButton, "check_button")
         self.generate_button = self.findChild(QPushButton, "generate_button")
         self.template_button = self.findChild(QPushButton, "template_button")
+        self.info_box = self.findChild(QTextBrowser, "info_box")
 
         # connect button presses to actions
         self.browse_button.clicked.connect(self.browse_folders)
@@ -42,23 +43,31 @@ class MainWindow(QMainWindow):
             self.sheet = None
 
     def check_folders(self):
+        self.info_box.setText("")
+
         if self.sheet is not None:  # if sheet is loaded
             missing_pics = self.sheet.check_pictures()
-            print(missing_pics)
 
-            # TODO: display list of missing pictures
-            # TODO: checkmark if none missing?
+            if len(missing_pics) != 0:  # if pictures are missing
+                text = ""
+                for pic in missing_pics:
+                    text += "Missing " + pic + " picture\n"
+                self.info_box.setText(text)
+            else:  # if all pictures exist
+                self.info_box.setText("All entries have a matching picture :)")
         else:
             pass  # TODO: error popup - sheet not found
 
     def generate_report(self):
         self.check_folders()
-        pass  # TODO: call Document
+        # TODO: call Document
+        # TODO: overwrite confirmation
 
     def generate_template(self):
         pass
         # TODO: make template sheet
         # TODO: copy paste on fcn call
+        # TODO: overwrite confirmation
 
 
 if __name__ == "__main__":
