@@ -36,7 +36,7 @@ class Sheet:
         self.folder = self.path[:self.path.rfind("/", 0, -1)]
 
         fp = pd.read_excel(path)
-        self.location = LocationInfo(fp.columns[2], fp.iloc[1, 2], fp.iloc[2,2])
+        self.location = LocationInfo(fp.columns[2], fp.iloc[0, 2], fp.iloc[1, 2])
 
         for tup in fp.itertuples():
             if type(tup[1]) == float:  # skip empty cells
