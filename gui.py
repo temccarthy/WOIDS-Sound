@@ -2,7 +2,9 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, Q
     QErrorMessage
 from PyQt5 import uic
 import sys
-from spreadsheet import Sheet
+from spreadsheet import Sheet, LocationInfo
+from document import build_document
+
 
 error_text = '<html><head/><body><p><span style=" color:#ef0000;">ERROR: Spreadsheet not found</span></p></body></html>'
 
@@ -35,14 +37,15 @@ class MainWindow(QMainWindow):
         # TODO: change default file location
         # TODO: crash on canceling file
         path = QFileDialog.getOpenFileName(self, "Select the spreadsheet", "E:/WSP/5.17/RED LINE/CABOT (R-13)")
-        self.file_path_line.setText(path[0])
+        if path[0] is not "":
+            self.file_path_line.setText(path[0])
 
-        try:
-            self.sheet = Sheet(path[0])
-            self.error_label.setText("")
-        except ValueError:
-            self.error_label.setText(error_text)
-            self.sheet = None
+            try:
+                self.sheet = Sheet(path[0])
+                self.error_label.setText("")
+            except ValueError:
+                self.error_label.setText(error_text)
+                self.sheet = None
 
     def check_folders(self):
         self.info_box.setText("")
@@ -56,12 +59,12 @@ class MainWindow(QMainWindow):
                     text += "Missing " + pic + " picture\n"
                 self.info_box.setText(text)
             else:  # if all pictures exist
-                self.info_box.setText("All entries have a matching picture :)")
+                self.info_box.setText("All entries have a matching picture :)\n")
                 return 1
         else:
             error_dialog = QErrorMessage()
             error_dialog.setWindowTitle("Error")
-            error_dialog.showMessage("Please select an appropriate spreadsheet")
+            error_dialog.showMessage("Please select an appropriate spreadsheet\n")
 
             error_dialog.exec()
 
@@ -69,8 +72,8 @@ class MainWindow(QMainWindow):
 
     def generate_report(self):
         if self.check_folders():
-            pass
-        # TODO: call Document
+            build_document(self.sheet)
+        # TODO: update info box
         # TODO: overwrite confirmation
 
     def generate_template(self):

@@ -20,7 +20,7 @@ styleT = ParagraphStyle(
 
 def create_equipment_table(equip):
     image = Image(equip.image_path)
-    image._restrictSize(2 * inch, 2.5 * inch)
+    image._restrictSize(2 * inch, 2.5 * inch)  # TODO: fix rotating pics
     descr_p = Paragraph(equip.descr)
     descr_p.wrap(4.75 * inch, HEIGHT)  # HEIGHT?
     sol_text_p = Paragraph(equip.sol_text)
@@ -93,19 +93,17 @@ def first_page_format(canvas, doc):
 #     canvas.restoreState()
 
 
-def build_document():
+def build_document(sheet):
     doc = SimpleDocTemplate("MBTA Tunnel Vent and System Assessment.pdf", pageSize=letter,
                             title="MBTA Tunnel Vent and System Assessment", author="WSP")  # start document template
     Story = []
 
-    t = create_report_table(LocationInfo("RED LINE", "Vent Shaft R-13 (Cabot Yard)", "5/8/2021"))
+    t = create_report_table(sheet.location)
     Story.append(t)  # add location information
     Story.append(Spacer(1, 0.2 * inch))
 
-    for i in range(10):  # for row in spreadsheet
-        e = Equipment("E", 1, "EF-2 EXHAUST PLENUM", "PUSHBUTTON", 3, "CORROSION",
-                      "PUSHBUTTON IS CORRODED. DEVICE IS STILL OPERATIONAL, BUT SHOULD BE MONITORED.",
-                      "MONITOR", "MONITOR DEVICE OVER COMING YEARS", "images/pushbutton.png")  # get from sheet
+    for row in sheet.df.itertuples():  # for row in spreadsheet
+        e = Equipment.generate_equip(sheet.folder, row)
         t = create_equipment_table(e)
 
         Story.append(KeepTogether(t))
