@@ -1,3 +1,5 @@
+import glob
+
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
@@ -113,8 +115,10 @@ def build_document(sheet):
 
     doc.build(Story, onFirstPage=first_page_format, onLaterPages=first_page_format)
 
+
 def check_doc_exists(sheet):
-    pass
+    matches = glob.glob(os.path.join(sheet.folder, document_name))
+    return len(matches) != 0
 
 
 if __name__ == '__main__':

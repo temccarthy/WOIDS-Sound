@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, Q
 from PyQt5 import uic
 import sys
 from spreadsheet import Sheet, LocationInfo
-from document import build_document
+from document import build_document, check_doc_exists
 
 error_text = '<html><head/><body><p><span style=" color:#ef0000;">ERROR: Spreadsheet not found</span></p></body></html>'
 
@@ -71,16 +71,18 @@ class MainWindow(QMainWindow):
 
     def generate_report(self):
         if self.check_folders():
-            # TODO: only confirm if file already exists
-            overwrite_reply = QMessageBox.question(self, "Are you sure?", "A report file already exists in the "
-                                                                          "selected directory. Do you want to "
-                                                                          "overwrite it?", QMessageBox.Yes |
-                                                   QMessageBox.No, QMessageBox.No)
-            if overwrite_reply == QMessageBox.Yes:
-                build_document(self.sheet)
-                self.info_box.setText(self.info_box.toPlainText() + "Report generated!\n")
-            elif overwrite_reply == QMessageBox.No:
-                self.info_box.setText(self.info_box.toPlainText() + "Report not generated\n")
+            if check_doc_exists(self.sheet):
+                overwrite_reply = QMessageBox.question(self, "Are you sure?", "A report file already exists in the "
+                                                                              "selected directory. Do you want to "
+                                                                              "overwrite it?", QMessageBox.Yes |
+                                                       QMessageBox.No, QMessageBox.No)
+                if overwrite_reply == QMessageBox.No:
+                    self.info_box.setText(self.info_box.toPlainText() + "Report not generated\n")
+                    return
+
+            # build doc if yes to confirmation or doc isn't present
+            build_document(self.sheet)
+            self.info_box.setText(self.info_box.toPlainText() + "Report generated!\n")
 
     def generate_template(self):
         pass
