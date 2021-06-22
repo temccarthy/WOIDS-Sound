@@ -48,7 +48,6 @@ class Sheet:
 
     def check_pictures(self):
         missing_pics = []
-        # TODO: set equipment photo path here?
         for row in self.df.itertuples():
             files = glob.glob(self.folder + "/" + row[3] + ".*")
             if len(files) == 0:

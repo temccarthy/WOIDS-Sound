@@ -27,12 +27,8 @@ for orientation in ExifTags.TAGS.keys():
     if ExifTags.TAGS[orientation] == 'Orientation':
         break
 
-class RotatedImage(Image):
-    def wrap(self, availWidth, availHeight):
-        return Image.wrap(self, availWidth, availHeight)
-        # height, width = Image.wrap(self, availHeight, availWidth)
-        # return width, height
 
+class RotatedImage(Image):
     def draw(self):
         self.canv.rotate(-90)
         self.canv.translate(- self.drawWidth/2 - self.drawHeight/2, self.drawWidth/2-self.drawHeight/2)
@@ -41,20 +37,20 @@ class RotatedImage(Image):
 
 def create_equipment_table(equip):
     path = equip.image_path
-    # path = "F:/WSP/5.17/RED LINE/CABOT (R-13)/E1.JPG"
 
     # fix rotated images
     with PIL.Image.open(path) as img:
         exif = img._getexif()
     if exif[orientation] == 6:
-        image = RotatedImage(path, width=2*inch, height=2.5*inch, kind="proportional")
+        image = RotatedImage(path, width=2.5*inch, height=3*inch, kind="proportional")
     else:
-        image = Image(path, width=2*inch, height=2.5*inch, kind="proportional")
+        image = Image(path, width=2.25*inch, height=2.5*inch, kind="proportional")
 
+    # infomation paragraphs
     descr_p = Paragraph(equip.descr)
-    descr_p.wrap(4.75 * inch, HEIGHT)  # HEIGHT?
+    descr_p.wrap(4.75 * inch, HEIGHT)
     sol_text_p = Paragraph(equip.sol_text)
-    sol_text_p.wrap(4.75 * inch, HEIGHT)  # HEIGHT?
+    sol_text_p.wrap(4.75 * inch, HEIGHT)
     data = [
         ["  " + equip.id, Paragraph('<b>Room:</b>'), equip.room, Paragraph('<b>Equipment ID:</b>'), equip.equipment_id,
          Paragraph('<b>CS:</b> %d' % equip.cs)],
@@ -87,10 +83,10 @@ def create_equipment_table(equip):
 
 def create_report_table(loc):
     data = [
-        [Paragraph('<b>RAIL LINE:</b> %s' % loc.rail), Paragraph('<b>INSPECTION DATE:</b> %s' % loc.insp_date)],
-        # change date data type?
+        [Paragraph('<b>RAIL LINE:</b> %s' % loc.rail),
+         Paragraph('<b>INSPECTION DATE:</b> %s' % loc.insp_date.strftime("%m/%d/%Y"))],
         [Paragraph('<b>LOCATION:</b> %s' % loc.location)],
-            ]
+    ]
     t = Table(data)
     return t
 
