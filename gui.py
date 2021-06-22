@@ -1,11 +1,10 @@
 from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, QFileDialog, QLabel, QTextBrowser, \
-    QErrorMessage
+    QErrorMessage, QMessageBox
 from PyQt5 import uic
 import sys
 from spreadsheet import Sheet, LocationInfo
 from document import build_document
-
 
 error_text = '<html><head/><body><p><span style=" color:#ef0000;">ERROR: Spreadsheet not found</span></p></body></html>'
 
@@ -13,7 +12,6 @@ error_text = '<html><head/><body><p><span style=" color:#ef0000;">ERROR: Spreads
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-        # self.setWindowIcon(QIcon("./images/wsp square.png"))
         uic.loadUi("WOIDS.ui", self)
 
         self.sheet = None
@@ -37,8 +35,7 @@ class MainWindow(QMainWindow):
 
     def browse_folders(self):
         # TODO: change default file location
-        # TODO: crash on canceling file
-        path = QFileDialog.getOpenFileName(self, "Select the spreadsheet", "E:/WSP/5.17/RED LINE/CABOT (R-13)")
+        path = QFileDialog.getOpenFileName(self, "Select the spreadsheet", "F:/WSP/5.17/RED LINE/CABOT (R-13)")
         if path[0] != "":
             self.file_path_line.setText(path[0])
 
@@ -74,10 +71,16 @@ class MainWindow(QMainWindow):
 
     def generate_report(self):
         if self.check_folders():
-            build_document(self.sheet)
-            self.info_box.setText(self.info_box.toPlainText() + "Report generated!\n")
-        # TODO: overwrite confirmation
-
+            overwrite_reply = QMessageBox.question(self, "Are you sure?", "A report file already exists in the "
+                                                                          "selected directory. Do you want to "
+                                                                          "overwrite it?", QMessageBox.Yes |
+                                                   QMessageBox.No, QMessageBox.No)
+            if overwrite_reply == QMessageBox.Yes:
+                build_document(self.sheet)
+                self.info_box.setText(self.info_box.toPlainText() + "Report generated!\n")
+            elif overwrite_reply == QMessageBox.No:
+                self.info_box.setText(self.info_box.toPlainText() + "Report not generated\n")
+                
     def generate_template(self):
         pass
         # TODO: make template sheet
