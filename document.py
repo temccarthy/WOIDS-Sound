@@ -1,6 +1,7 @@
 import glob
 
-from reportlab.lib import colors
+from PIL import ExifTags
+from reportlab.lib import colors, utils
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Frame, PageTemplate, Table, KeepTogether
@@ -8,6 +9,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from datetime import date
 from spreadsheet import LocationInfo, Equipment
 import os
+import PIL.Image
 
 WIDTH, HEIGHT = letter
 styles = getSampleStyleSheet()
@@ -21,10 +23,34 @@ styleT = ParagraphStyle(
 )
 document_name = "MBTA Tunnel Vent and System Assessment.pdf"
 
+for orientation in ExifTags.TAGS.keys():
+    if ExifTags.TAGS[orientation] == 'Orientation':
+        break
+
+class RotatedImage(Image):
+    def wrap(self, availWidth, availHeight):
+        return Image.wrap(self, availWidth, availHeight)
+        # height, width = Image.wrap(self, availHeight, availWidth)
+        # return width, height
+
+    def draw(self):
+        self.canv.rotate(-90)
+        self.canv.translate(- self.drawWidth/2 - self.drawHeight/2, self.drawWidth/2-self.drawHeight/2)
+        Image.draw(self)
+
 
 def create_equipment_table(equip):
-    image = Image(equip.image_path)
-    image._restrictSize(2 * inch, 2.5 * inch)  # TODO: fix rotating pics
+    path = equip.image_path
+    # path = "F:/WSP/5.17/RED LINE/CABOT (R-13)/E1.JPG"
+
+    # fix rotated images
+    with PIL.Image.open(path) as img:
+        exif = img._getexif()
+    if exif[orientation] == 6:
+        image = RotatedImage(path, width=2*inch, height=2.5*inch, kind="proportional")
+    else:
+        image = Image(path, width=2*inch, height=2.5*inch, kind="proportional")
+
     descr_p = Paragraph(equip.descr)
     descr_p.wrap(4.75 * inch, HEIGHT)  # HEIGHT?
     sol_text_p = Paragraph(equip.sol_text)

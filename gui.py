@@ -80,7 +80,7 @@ class MainWindow(QMainWindow):
                     self.info_box.setText(self.info_box.toPlainText() + "Report not generated\n")
                     return
 
-            # build doc if yes to confirmation or doc isn't present
+            # build doc if yes to confirmation or doc isn't present in folder
             build_document(self.sheet)
             self.info_box.setText(self.info_box.toPlainText() + "Report generated!\n")
 
