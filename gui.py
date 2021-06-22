@@ -71,6 +71,7 @@ class MainWindow(QMainWindow):
 
     def generate_report(self):
         if self.check_folders():
+            # TODO: only confirm if file already exists
             overwrite_reply = QMessageBox.question(self, "Are you sure?", "A report file already exists in the "
                                                                           "selected directory. Do you want to "
                                                                           "overwrite it?", QMessageBox.Yes |
@@ -80,7 +81,7 @@ class MainWindow(QMainWindow):
                 self.info_box.setText(self.info_box.toPlainText() + "Report generated!\n")
             elif overwrite_reply == QMessageBox.No:
                 self.info_box.setText(self.info_box.toPlainText() + "Report not generated\n")
-                
+
     def generate_template(self):
         pass
         # TODO: make template sheet

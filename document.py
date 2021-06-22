@@ -5,6 +5,7 @@ from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Fram
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from datetime import date
 from spreadsheet import LocationInfo, Equipment
+import os
 
 WIDTH, HEIGHT = letter
 styles = getSampleStyleSheet()
@@ -16,6 +17,7 @@ styleT = ParagraphStyle(
     parent=styles['Title'],
     fontSize=14
 )
+document_name = "MBTA Tunnel Vent and System Assessment.pdf"
 
 
 def create_equipment_table(equip):
@@ -94,7 +96,7 @@ def first_page_format(canvas, doc):
 
 
 def build_document(sheet):
-    doc = SimpleDocTemplate("MBTA Tunnel Vent and System Assessment.pdf", pageSize=letter,
+    doc = SimpleDocTemplate(os.path.join(sheet.folder, document_name), pageSize=letter,
                             title="MBTA Tunnel Vent and System Assessment", author="WSP")  # start document template
     Story = []
 
@@ -110,6 +112,9 @@ def build_document(sheet):
         Story.append(Spacer(1, 0.1 * inch))
 
     doc.build(Story, onFirstPage=first_page_format, onLaterPages=first_page_format)
+
+def check_doc_exists(sheet):
+    pass
 
 
 if __name__ == '__main__':
