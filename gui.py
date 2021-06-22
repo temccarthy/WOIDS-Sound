@@ -1,3 +1,4 @@
+from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, QFileDialog, QLabel, QTextBrowser, \
     QErrorMessage
 from PyQt5 import uic
@@ -12,6 +13,7 @@ error_text = '<html><head/><body><p><span style=" color:#ef0000;">ERROR: Spreads
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
+        # self.setWindowIcon(QIcon("./images/wsp square.png"))
         uic.loadUi("WOIDS.ui", self)
 
         self.sheet = None
@@ -37,7 +39,7 @@ class MainWindow(QMainWindow):
         # TODO: change default file location
         # TODO: crash on canceling file
         path = QFileDialog.getOpenFileName(self, "Select the spreadsheet", "E:/WSP/5.17/RED LINE/CABOT (R-13)")
-        if path[0] is not "":
+        if path[0] != "":
             self.file_path_line.setText(path[0])
 
             try:

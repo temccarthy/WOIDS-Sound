@@ -19,6 +19,10 @@
   <property name="windowTitle">
    <string>WOIDS</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>images/wsp square.png</normaloff>images/wsp square.png</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QFrame" name="frame">
     <property name="geometry">
@@ -239,6 +243,8 @@ p, li { white-space: pre-wrap; }
    </widget>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>
