@@ -19,6 +19,7 @@ def resource_path(relative_path):
     return os.path.join(os.path.abspath("."), relative_path)
 
 
+# setup variables
 WIDTH, HEIGHT = letter
 styles = getSampleStyleSheet()
 mbta_logo = resource_path("resources/MBTA_logo_text.png")
@@ -36,6 +37,7 @@ for orientation in ExifTags.TAGS.keys():
         break
 
 
+# for rotating portrait photos
 class RotatedImage(Image):
     def draw(self):
         self.canv.rotate(-90)
@@ -89,6 +91,7 @@ def create_equipment_table(equip):
     return t
 
 
+# creates report table for top of document
 def create_report_table(loc):
     data = [
         [Paragraph('<b>RAIL LINE:</b> %s' % loc.rail),
@@ -127,6 +130,7 @@ def first_page_format(canvas, doc):
 #     canvas.restoreState()
 
 
+# assembles the document and saves it to the sheet's location
 def build_document(sheet):
     doc = SimpleDocTemplate(os.path.join(sheet.folder, document_name), pageSize=letter,
                             title="MBTA Tunnel Vent and System Assessment", author="WSP")  # start document template
@@ -146,6 +150,7 @@ def build_document(sheet):
     doc.build(Story, onFirstPage=first_page_format, onLaterPages=first_page_format)
 
 
+# checks if document already exists in sheet's folder
 def check_doc_exists(sheet):
     matches = glob.glob(os.path.join(sheet.folder, document_name))
     return len(matches) != 0

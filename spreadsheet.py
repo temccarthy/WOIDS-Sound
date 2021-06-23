@@ -1,10 +1,10 @@
 import math
-
 import pandas as pd
 import os
 import glob
 
 
+# Basic spreadsheet info class
 class LocationInfo:
     def __init__(self, rail, location, insp_date):
         self.rail = rail
@@ -12,6 +12,7 @@ class LocationInfo:
         self.insp_date = insp_date
 
 
+# Piece of equipment class
 class Equipment:
     def __init__(self, discipline, num, room, equipment_id, cs, title, descr, sol_title, sol_text, image_path):
         self.discipline = discipline
@@ -24,8 +25,9 @@ class Equipment:
         self.descr = descr
         self.sol_title = sol_title
         self.sol_text = sol_text
-        self.image_path = image_path  # auto calculate?
+        self.image_path = image_path
 
+    # generates an equipment given a row in the sheet
     @staticmethod
     def generate_equip(folder, tup):
         # deal with empty cells in sheet
@@ -40,6 +42,7 @@ class Equipment:
         return Equipment(tup[1], tup[2], tup[4], tup[5], tup[6], tup[7], tup[8], tup[9], tup[10], picture_path)
 
 
+# holds spreadsheet dataframe
 class Sheet:
     def __init__(self, path):
         self.path = path

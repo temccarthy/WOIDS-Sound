@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, Q
 from PyQt5 import uic
 import sys
 from shutil import copy
-from spreadsheet import Sheet, LocationInfo
+from spreadsheet import Sheet
 from document import build_document, check_doc_exists, resource_path
 
 error_text = '<html><head/><body><p><span style=" color:#ef0000;">ERROR: Spreadsheet not found</span></p></body></html>'
@@ -33,8 +33,8 @@ class MainWindow(QMainWindow):
 
         self.show()
 
+    # browse folders for spreadsheet
     def browse_folders(self):
-        # TODO: change default file location
         path = QFileDialog.getOpenFileName(self, "Select the spreadsheet")
         if path[0] != "":
             self.file_path_line.setText(path[0])
@@ -46,6 +46,7 @@ class MainWindow(QMainWindow):
                 self.error_label.setText(error_text)
                 self.sheet = None
 
+    # checks that each row in spreadsheet has an associated picture
     def check_folders(self):
         self.info_box.setText("")
 
@@ -69,6 +70,7 @@ class MainWindow(QMainWindow):
 
         return 0
 
+    # generates PDF document and confirms overwrite with user if necessary
     def generate_report(self):
         if self.check_folders():
             if check_doc_exists(self.sheet):
@@ -84,6 +86,7 @@ class MainWindow(QMainWindow):
             build_document(self.sheet)
             self.info_box.setText(self.info_box.toPlainText() + "Report generated!\n")
 
+    # generates template spreadsheet and confirms overwrite with user if necessary
     def generate_template(self):
         path = QFileDialog.getExistingDirectory(self, "Select A Folder")
         if Sheet.check_template_exists(path):
