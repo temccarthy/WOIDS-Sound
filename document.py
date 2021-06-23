@@ -9,12 +9,20 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from datetime import date
 from spreadsheet import LocationInfo, Equipment
 import os
+import sys
 import PIL.Image
+
+
+def resource_path(relative_path):
+    if hasattr(sys, '_MEIPASS'):
+        return os.path.join(sys._MEIPASS, relative_path)
+    return os.path.join(os.path.abspath("."), relative_path)
+
 
 WIDTH, HEIGHT = letter
 styles = getSampleStyleSheet()
-mbta_logo = "resources/MBTA_logo_text.png"
-wsp_logo = "resources/img-png-wsp-red.png"
+mbta_logo = resource_path("resources/MBTA_logo_text.png")
+wsp_logo = resource_path("resources/img-png-wsp-red.png")
 styleN = styles["Normal"]
 styleT = ParagraphStyle(
     'newTitle',
@@ -141,7 +149,3 @@ def build_document(sheet):
 def check_doc_exists(sheet):
     matches = glob.glob(os.path.join(sheet.folder, document_name))
     return len(matches) != 0
-
-
-if __name__ == '__main__':
-    build_document()

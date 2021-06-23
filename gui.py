@@ -4,7 +4,7 @@ from PyQt5 import uic
 import sys
 from shutil import copy
 from spreadsheet import Sheet, LocationInfo
-from document import build_document, check_doc_exists
+from document import build_document, check_doc_exists, resource_path
 
 error_text = '<html><head/><body><p><span style=" color:#ef0000;">ERROR: Spreadsheet not found</span></p></body></html>'
 
@@ -12,7 +12,7 @@ error_text = '<html><head/><body><p><span style=" color:#ef0000;">ERROR: Spreads
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-        uic.loadUi("WOIDS.ui", self)
+        uic.loadUi(resource_path("WOIDS.ui"), self)
 
         self.sheet = None
 
@@ -35,7 +35,7 @@ class MainWindow(QMainWindow):
 
     def browse_folders(self):
         # TODO: change default file location
-        path = QFileDialog.getOpenFileName(self, "Select the spreadsheet", "F:/WSP/5.17/RED LINE/CABOT (R-13)")
+        path = QFileDialog.getOpenFileName(self, "Select the spreadsheet")
         if path[0] != "":
             self.file_path_line.setText(path[0])
 
@@ -95,7 +95,7 @@ class MainWindow(QMainWindow):
                 self.info_box.setText(self.info_box.toPlainText() + "Template not copied\n")
                 return
 
-        copy("./resources/MBTA_TEMPLATE.xlsx", path)
+        copy(resource_path("resources/MBTA_TEMPLATE.xlsx"), path)
         self.info_box.setText(self.info_box.toPlainText() + "Template copied!\n")
 
 
