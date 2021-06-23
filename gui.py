@@ -1,8 +1,8 @@
-from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, QFileDialog, QLabel, QTextBrowser, \
     QErrorMessage, QMessageBox
 from PyQt5 import uic
 import sys
+from shutil import copy
 from spreadsheet import Sheet, LocationInfo
 from document import build_document, check_doc_exists
 
@@ -85,10 +85,18 @@ class MainWindow(QMainWindow):
             self.info_box.setText(self.info_box.toPlainText() + "Report generated!\n")
 
     def generate_template(self):
-        pass
-        # TODO: make template sheet
-        # TODO: copy paste on fcn call
-        # TODO: overwrite confirmation
+        path = QFileDialog.getExistingDirectory(self, "Select A Folder")
+        if Sheet.check_template_exists(path):
+            overwrite_reply = QMessageBox.question(self, "Are you sure?", "A template file already exists in the "
+                                                                          "selected directory. Do you want to "
+                                                                          "overwrite it?", QMessageBox.Yes |
+                                                   QMessageBox.No, QMessageBox.No)
+            if overwrite_reply == QMessageBox.No:
+                self.info_box.setText(self.info_box.toPlainText() + "Template not copied\n")
+                return
+
+        copy("./resources/MBTA_TEMPLATE.xlsx", path)
+        self.info_box.setText(self.info_box.toPlainText() + "Template copied!\n")
 
 
 if __name__ == "__main__":

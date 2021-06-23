@@ -2,6 +2,7 @@ import pandas as pd
 import os
 import glob
 
+
 class LocationInfo:
     def __init__(self, rail, location, insp_date):
         self.rail = rail
@@ -42,7 +43,7 @@ class Sheet:
             if type(tup[1]) == float:  # skip empty cells
                 continue
             elif tup[1].startswith("Discipline"):  # find top of table
-                skip = tup[0]+1
+                skip = tup[0] + 1
                 break
         self.df = pd.read_excel(path, skiprows=skip, usecols="A:J")
 
@@ -54,3 +55,9 @@ class Sheet:
                 missing_pics.append(row[3])
 
         return missing_pics
+
+    @staticmethod
+    def check_template_exists(path):
+        template_name = "MBTA_TEMPLATE.xlsx"
+        matches = glob.glob(os.path.join(path, template_name))
+        return len(matches) != 0

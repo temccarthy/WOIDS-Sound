@@ -21,7 +21,7 @@
   </property>
   <property name="windowIcon">
    <iconset>
-    <normaloff>images/wsp square.png</normaloff>images/wsp square.png</iconset>
+    <normaloff>resources/wsp square.png</normaloff>resources/wsp square.png</iconset>
   </property>
   <widget class="QWidget" name="centralwidget">
    <widget class="QFrame" name="frame">
@@ -243,8 +243,6 @@ p, li { white-space: pre-wrap; }
    </widget>
   </widget>
  </widget>
- <resources>
-  <include location="resources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>

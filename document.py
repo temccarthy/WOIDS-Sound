@@ -13,8 +13,8 @@ import PIL.Image
 
 WIDTH, HEIGHT = letter
 styles = getSampleStyleSheet()
-mbta_logo = "images/MBTA_logo_text.png"
-wsp_logo = "images/img-png-wsp-red.png"
+mbta_logo = "resources/MBTA_logo_text.png"
+wsp_logo = "resources/img-png-wsp-red.png"
 styleN = styles["Normal"]
 styleT = ParagraphStyle(
     'newTitle',

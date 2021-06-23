@@ -1,6 +1,6 @@
 /env 
 /.idea
-/images
+/resources
 /__pycache__
 
 *.pdf
