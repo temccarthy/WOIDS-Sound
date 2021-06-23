@@ -53,7 +53,7 @@ def create_equipment_table(equip):
     sol_text_p.wrap(4.75 * inch, HEIGHT)
     data = [
         ["  " + equip.id, Paragraph('<b>Room:</b>'), equip.room, Paragraph('<b>Equipment ID:</b>'), equip.equipment_id,
-         Paragraph('<b>CS:</b> %d' % equip.cs)],
+         Paragraph('<b>CS:</b> %s' % equip.cs)],
         [equip.title, "", "", "", image],
         [descr_p],
         [equip.sol_title],
