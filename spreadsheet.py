@@ -30,12 +30,13 @@ class Equipment:
     def generate_equip(folder, tup):
         # deal with empty cells in sheet
         tup = tuple("" if isinstance(i, float) and math.isnan(i) else i for i in tup)
-        
+
         # turn CS into integers or "" if empty
         tup = tup[:6] + ("" if isinstance(tup[6], str) else int(tup[6]),) + tup[7:]
 
+        # calculate picture path
         picture_path = glob.glob(folder + "/" + tup[3] + ".*")[0]
-        print(tup[6])
+
         return Equipment(tup[1], tup[2], tup[4], tup[5], tup[6], tup[7], tup[8], tup[9], tup[10], picture_path)
 
 

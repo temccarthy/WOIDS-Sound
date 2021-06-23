@@ -76,7 +76,7 @@ def create_equipment_table(equip):
                            ('BACKGROUND', (0, 1), (3, 1), colors.pink),
                            ('BACKGROUND', (0, 3), (3, 3), colors.lightgreen),
                            ],
-              colWidths=[.25 * inch, .75 * inch, 2.5 * inch, 1.25 * inch, 1.9 * inch, .6 * inch],
+              colWidths=[.4 * inch, .75 * inch, 2.3 * inch, 1.25 * inch, 1.9 * inch, .6 * inch],
               rowHeights=[.25 * inch, .25 * inch, 1.25 * inch, .25 * inch, 1 * inch])
     return t
 
