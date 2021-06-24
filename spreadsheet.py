@@ -37,7 +37,7 @@ class Equipment:
         tup = tup[:6] + ("" if isinstance(tup[6], str) else int(tup[6]),) + tup[7:]
 
         # calculate picture path
-        picture_path = glob.glob(folder + "/" + tup[3] + ".*")[0]
+        picture_path = glob.glob(folder + "/" + tup[3][:1] + " (" + tup[3][1:] + ")" + ".*")[0]
 
         return Equipment(tup[1], tup[2], tup[4], tup[5], tup[6], tup[7], tup[8], tup[9], tup[10], picture_path)
 
@@ -62,7 +62,8 @@ class Sheet:
     def check_pictures(self):
         missing_pics = []
         for row in self.df.itertuples():
-            files = glob.glob(self.folder + "/" + row[3] + ".*")
+            files = glob.glob(self.folder + "/" + row[3][:1] + " (" + row[3][1:] + ")" + ".*")
+            print(files)
             if len(files) == 0:
                 missing_pics.append(row[3])
 
