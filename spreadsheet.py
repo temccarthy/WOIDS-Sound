@@ -48,24 +48,28 @@ class Sheet:
         self.path = path
         self.folder = self.path[:self.path.rfind("/", 0, -1)]
 
-        fp = pd.read_excel(path)
-        self.location = LocationInfo(fp.columns[2], fp.iloc[0, 2], fp.iloc[1, 2])
+        self.fp = pd.ExcelFile(path)
+        loc_sheet = self.fp.parse(0)
+        self.location = LocationInfo(loc_sheet.columns[1], loc_sheet.iloc[0, 1], loc_sheet.iloc[1, 1])
 
-        for tup in fp.itertuples():
-            if type(tup[1]) == float:  # skip empty cells
-                continue
-            elif tup[1].startswith("Discipline"):  # find top of table
-                skip = tup[0] + 1
-                break
-        self.df = pd.read_excel(path, skiprows=skip, usecols="A:J")
+        # fp = pd.read_excel(path)
+        # self.location = LocationInfo(fp.columns[2], fp.iloc[0, 2], fp.iloc[1, 2])
+        #
+        # for tup in fp.itertuples():
+        #     if type(tup[1]) == float:  # skip empty cells
+        #         continue
+        #     elif tup[1].startswith("Discipline"):  # find top of table
+        #         skip = tup[0] + 1
+        #         break
+        # self.df = pd.read_excel(path, skiprows=skip, usecols="A:J")
 
     def check_pictures(self):
         missing_pics = []
-        for row in self.df.itertuples():
-            files = glob.glob(self.folder + "/" + row[3][:1] + " (" + row[3][1:] + ")" + ".*")
-            print(files)
-            if len(files) == 0:
-                missing_pics.append(row[3])
+        for i in range(4):
+            for row in self.fp.parse(i+1).itertuples():
+                files = glob.glob(self.folder + "/" + row[3][:1] + " (" + row[3][1:] + ")" + ".*")
+                if len(files) == 0:
+                    missing_pics.append(row[3])
 
         return missing_pics
 

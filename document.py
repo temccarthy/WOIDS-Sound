@@ -31,6 +31,7 @@ styleT = ParagraphStyle(
     fontSize=14
 )
 document_name = "MBTA Tunnel Vent and System Assessment.pdf"
+cs_colors = [colors.green, colors.yellow, colors.orange, colors.red]
 
 for orientation in ExifTags.TAGS.keys():
     if ExifTags.TAGS[orientation] == 'Orientation':
@@ -64,14 +65,14 @@ def create_equipment_table(equip):
     data = [
         ["  " + equip.id, Paragraph('<b>Room:</b>'), equip.room, Paragraph('<b>Equipment ID:</b>'), equip.equipment_id,
          Paragraph('<b>CS:</b> %s' % equip.cs)],
-        [equip.title, "", "", "", image],
+        [Paragraph('<b>%s</b>' % equip.title), "", "", "", image],
         [descr_p],
-        [equip.sol_title],
+        [Paragraph('<b>%s</b>' % equip.sol_title)],
         [sol_text_p],
         ]
     t = Table(data, style=[('ALIGN', (0, 0), (-1, 0), 'CENTER'),  # align top row centered
-                           ('ALIGN', (0, 1), (-1, 1), 'CENTER'),  # align title and photo
-                           ('ALIGN', (0, 3), (0, 3), 'CENTER'),  # align solution title centered
+                           ('ALIGN', (3, 1), (-1, 1), 'CENTER'),  # align title and photo
+                           # ('ALIGN', (0, 3), (0, 3), 'CENTER'),  # align solution title centered
                            ('VALIGN', (0, 2), (0, 2), 'TOP'),
                            ('VALIGN', (0, 4), (0, 4), 'TOP'),
                            ('VALIGN', (4, 1), (-1, -1), 'CENTER'),
@@ -85,6 +86,7 @@ def create_equipment_table(equip):
                            ('SPAN', (-2, 1), (-1, -1)),  # span picture box
                            ('BACKGROUND', (0, 1), (3, 1), colors.pink),
                            ('BACKGROUND', (0, 3), (3, 3), colors.lightgreen),
+                           ('BACKGROUND', (-1, 0), (-1, 0), cs_colors[equip.cs-1])
                            ],
               colWidths=[.4 * inch, .75 * inch, 2.3 * inch, 1.25 * inch, 1.9 * inch, .6 * inch],
               rowHeights=[.25 * inch, .25 * inch, 1.25 * inch, .25 * inch, 1 * inch])
@@ -140,12 +142,16 @@ def build_document(sheet):
     Story.append(t)  # add location information
     Story.append(Spacer(1, 0.2 * inch))
 
-    for row in sheet.df.itertuples():  # for row in spreadsheet
-        e = Equipment.generate_equip(sheet.folder, row)
-        t = create_equipment_table(e)
-
-        Story.append(KeepTogether(t))
+    for i in range(4):
+        Story.append(Paragraph(sheet.fp.sheet_names[i+1], style=styleT))
         Story.append(Spacer(1, 0.1 * inch))
+
+        for row in sheet.fp.parse(i+1).itertuples():  # for row in spreadsheet
+            e = Equipment.generate_equip(sheet.folder, row)
+            t = create_equipment_table(e)
+
+            Story.append(KeepTogether(t))
+            Story.append(Spacer(1, 0.1 * inch))
 
     doc.build(Story, onFirstPage=first_page_format, onLaterPages=first_page_format)
 
