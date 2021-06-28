@@ -35,8 +35,7 @@ class MainWindow(QMainWindow):
 
     # browse folders for spreadsheet
     def browse_folders(self):
-        # TODO: remove default path
-        path = QFileDialog.getOpenFileName(self, "Select the spreadsheet", "F:/WSP/5.17/RED LINE/CABOT (R-13)")
+        path = QFileDialog.getOpenFileName(self, "Select the spreadsheet")
         if path[0] != "":
             self.file_path_line.setText(path[0])
 
