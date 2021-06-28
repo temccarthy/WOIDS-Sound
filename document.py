@@ -97,7 +97,8 @@ def create_equipment_table(equip):
 def create_report_table(loc):
     data = [
         [Paragraph('<b>RAIL LINE:</b> %s' % loc.rail),
-         Paragraph('<b>INSPECTION DATE:</b> %s' % loc.insp_date.strftime("%m/%d/%Y"))],
+         Paragraph('<b>INSPECTION DATE:</b> %s' % ("" if isinstance(loc.insp_date, float)
+                                                   else loc.insp_date.strftime("%m/%d/%Y")))],
         [Paragraph('<b>LOCATION:</b> %s' % loc.location)],
     ]
     t = Table(data)
@@ -144,7 +145,6 @@ def build_document(sheet):
 
     for i in range(4):
         Story.append(Paragraph(sheet.fp.sheet_names[i+1], style=styleT))
-        Story.append(Spacer(1, 0.1 * inch))
 
         for row in sheet.fp.parse(i+1).itertuples():  # for row in spreadsheet
             e = Equipment.generate_equip(sheet.folder, row)
