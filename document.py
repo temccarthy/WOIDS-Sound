@@ -4,10 +4,10 @@ from PIL import ExifTags
 from reportlab.lib import colors, utils
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Frame, PageTemplate, Table, KeepTogether
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, KeepTogether
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from datetime import date
-from spreadsheet import LocationInfo, Equipment
+from spreadsheet import Equipment
 import os
 import sys
 import PIL.Image
@@ -31,7 +31,7 @@ styleT = ParagraphStyle(
     fontSize=14
 )
 document_name = "MBTA Tunnel Vent and System Assessment.pdf"
-cs_colors = [colors.green, colors.yellow, colors.orange, colors.red]
+cs_colors = [colors.lightgreen, colors.yellow, colors.orange, colors.pink]
 
 for orientation in ExifTags.TAGS.keys():
     if ExifTags.TAGS[orientation] == 'Orientation':
@@ -65,9 +65,9 @@ def create_equipment_table(equip):
     data = [
         ["  " + equip.id, Paragraph('<b>Room:</b>'), equip.room, Paragraph('<b>Equipment ID:</b>'), equip.equipment_id,
          Paragraph('<b>CS:</b> %s' % equip.cs)],
-        [Paragraph('<b>%s</b>' % equip.title), "", "", "", image],
+        [Paragraph('<b>ISSUE: %s</b>' % equip.title), "", "", "", image],
         [descr_p],
-        [Paragraph('<b>%s</b>' % equip.sol_title)],
+        [Paragraph('<b>SOLUTION: %s</b>' % equip.sol_title)],
         [sol_text_p],
         ]
     t = Table(data, style=[('ALIGN', (0, 0), (-1, 0), 'CENTER'),  # align top row centered
@@ -84,8 +84,6 @@ def create_equipment_table(equip):
                            ('SPAN', (0, 3), (3, 3)),  # span sol title
                            ('SPAN', (0, 4), (3, 4)),  # span sol descr
                            ('SPAN', (-2, 1), (-1, -1)),  # span picture box
-                           ('BACKGROUND', (0, 1), (3, 1), colors.pink),
-                           ('BACKGROUND', (0, 3), (3, 3), colors.lightgreen),
                            ('BACKGROUND', (-1, 0), (-1, 0), cs_colors[equip.cs-1])
                            ],
               colWidths=[.4 * inch, .75 * inch, 2.3 * inch, 1.25 * inch, 1.9 * inch, .6 * inch],
