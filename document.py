@@ -95,8 +95,7 @@ def create_equipment_table(equip):
 def create_report_table(loc):
     data = [
         [Paragraph('<b>RAIL LINE:</b> %s' % loc.rail),
-         Paragraph('<b>INSPECTION DATE:</b> %s' % ("" if isinstance(loc.insp_date, float)
-                                                   else loc.insp_date.strftime("%m/%d/%Y")))],
+         Paragraph('<b>INSPECTION DATE:</b> %s' % loc.insp_date)],
         [Paragraph('<b>LOCATION:</b> %s' % loc.location)],
     ]
     t = Table(data)

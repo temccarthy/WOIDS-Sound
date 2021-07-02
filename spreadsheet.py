@@ -1,3 +1,4 @@
+import datetime
 import math
 import pandas as pd
 import os
@@ -9,7 +10,7 @@ class LocationInfo:
     def __init__(self, rail, location, insp_date):
         self.rail = rail
         self.location = location
-        self.insp_date = insp_date
+        self.insp_date = insp_date.strftime("%m/%d/%Y") if isinstance(insp_date, datetime.datetime) else ""
 
 
 # Piece of equipment class
@@ -20,7 +21,10 @@ class Equipment:
         self.id = discipline + str(num)
         self.room = room
         self.equipment_id = equipment_id
-        self.cs = cs
+        try:
+            self.cs = min(max(int(cs), 0), 4)
+        except Exception:
+            self.cs = 0
         self.title = title
         self.descr = descr
         self.sol_title = sol_title
@@ -32,9 +36,6 @@ class Equipment:
     def generate_equip(folder, tup):
         # deal with empty cells in sheet
         tup = tuple("" if isinstance(i, float) and math.isnan(i) else i for i in tup)
-
-        # turn CS into integers or 0 if empty
-        tup = tup[:6] + (0 if isinstance(tup[6], str) else int(tup[6]),) + tup[7:]
 
         # calculate picture path
         picture_path = glob.glob(folder + "/" + tup[3][:1] + " (" + tup[3][1:] + ")" + ".*")[0]
