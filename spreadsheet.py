@@ -33,8 +33,8 @@ class Equipment:
         # deal with empty cells in sheet
         tup = tuple("" if isinstance(i, float) and math.isnan(i) else i for i in tup)
 
-        # turn CS into integers or "" if empty
-        tup = tup[:6] + ("" if isinstance(tup[6], str) else int(tup[6]),) + tup[7:]
+        # turn CS into integers or 0 if empty
+        tup = tup[:6] + (0 if isinstance(tup[6], str) else int(tup[6]),) + tup[7:]
 
         # calculate picture path
         picture_path = glob.glob(folder + "/" + tup[3][:1] + " (" + tup[3][1:] + ")" + ".*")[0]
@@ -51,17 +51,6 @@ class Sheet:
         self.fp = pd.ExcelFile(path)
         loc_sheet = self.fp.parse(0)
         self.location = LocationInfo(loc_sheet.columns[1], loc_sheet.iloc[0, 1], loc_sheet.iloc[1, 1])
-
-        # fp = pd.read_excel(path)
-        # self.location = LocationInfo(fp.columns[2], fp.iloc[0, 2], fp.iloc[1, 2])
-        #
-        # for tup in fp.itertuples():
-        #     if type(tup[1]) == float:  # skip empty cells
-        #         continue
-        #     elif tup[1].startswith("Discipline"):  # find top of table
-        #         skip = tup[0] + 1
-        #         break
-        # self.df = pd.read_excel(path, skiprows=skip, usecols="A:J")
 
     def check_pictures(self):
         missing_pics = []
