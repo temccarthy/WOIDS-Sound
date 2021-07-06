@@ -1,5 +1,4 @@
 import glob
-
 from PIL import ExifTags
 from reportlab.lib import colors, utils
 from reportlab.lib.pagesizes import letter
@@ -140,7 +139,7 @@ def build_document(sheet):
     Story.append(t)  # add location information
     Story.append(Spacer(1, 0.2 * inch))
 
-    for i in range(4):
+    for i in range(5):
         Story.append(Paragraph(sheet.fp.sheet_names[i+1], style=styleT))
 
         for row in sheet.fp.parse(i+1).itertuples():  # for row in spreadsheet

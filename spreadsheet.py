@@ -55,7 +55,7 @@ class Sheet:
 
     def check_pictures(self):
         missing_pics = []
-        for i in range(4):
+        for i in range(5):
             for row in self.fp.parse(i+1).itertuples():
                 files = glob.glob(self.folder + "/" + row[3][:1] + " (" + row[3][1:] + ")" + ".*")
                 if len(files) == 0:
