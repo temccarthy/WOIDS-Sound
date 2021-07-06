@@ -47,14 +47,16 @@ class RotatedImage(Image):
 
 def create_equipment_table(equip):
     path = equip.image_path
+    temp_path = path[:path.rfind("\\", 0, -1)] + "/temp/" + path[path.rfind("\\", 0, -1):]
+    print(path, temp_path)
 
     # fix rotated images
     with PIL.Image.open(path) as img:
         exif = img._getexif()
     if exif[orientation] == 6:
-        image = RotatedImage(path, width=2.5*inch, height=3*inch, kind="proportional")
+        image = RotatedImage(temp_path, width=2.5*inch, height=3*inch, kind="proportional")
     else:
-        image = Image(path, width=2.25*inch, height=2.5*inch, kind="proportional")
+        image = Image(temp_path, width=2.25*inch, height=2.5*inch, kind="proportional")
 
     # infomation paragraphs
     descr_p = Paragraph(equip.descr)
@@ -139,6 +141,9 @@ def build_document(sheet):
     Story.append(t)  # add location information
     Story.append(Spacer(1, 0.2 * inch))
 
+    # compress images into temp folder
+    sheet.compress_pictures()
+
     for i in range(5):
         Story.append(Paragraph(sheet.fp.sheet_names[i+1], style=styleT))
 
@@ -150,6 +155,9 @@ def build_document(sheet):
             Story.append(Spacer(1, 0.1 * inch))
 
     doc.build(Story, onFirstPage=first_page_format, onLaterPages=first_page_format)
+
+    # delete compressed image temp folder
+    sheet.delete_compressed_pictures()
 
 
 # checks if document already exists in sheet's folder

@@ -3,7 +3,8 @@ import math
 import pandas as pd
 import os
 import glob
-
+import PIL.Image
+import shutil
 
 # Basic spreadsheet info class
 class LocationInfo:
@@ -62,6 +63,21 @@ class Sheet:
                     missing_pics.append(row[3])
 
         return missing_pics
+
+    def compress_pictures(self):
+        if os.path.isdir(os.path.join(self.folder, "temp")):
+            self.delete_compressed_pictures()
+
+        os.mkdir(os.path.join(self.folder, "temp"))
+        for file in os.listdir(self.folder):
+            try:
+                with PIL.Image.open(os.path.join(self.folder, file)) as img:
+                    img.save(os.path.join(self.folder, "temp", file), optimize=True, quality=30)
+            except Exception:
+                pass
+
+    def delete_compressed_pictures(self):
+        shutil.rmtree(os.path.join(self.folder, "temp"))
 
     @staticmethod
     def check_template_exists(path):
