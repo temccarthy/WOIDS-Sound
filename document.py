@@ -48,7 +48,6 @@ class RotatedImage(Image):
 def create_equipment_table(equip):
     path = equip.image_path
     temp_path = path[:path.rfind("\\", 0, -1)] + "/temp/" + path[path.rfind("\\", 0, -1):]
-    print(path, temp_path)
 
     # fix rotated images
     with PIL.Image.open(path) as img:
