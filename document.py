@@ -1,13 +1,12 @@
 import glob
-
 from PIL import ExifTags
 from reportlab.lib import colors, utils
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Frame, PageTemplate, Table, KeepTogether
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, KeepTogether
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from datetime import date
-from spreadsheet import LocationInfo, Equipment
+from spreadsheet import Equipment
 import os
 import sys
 import PIL.Image
@@ -31,6 +30,7 @@ styleT = ParagraphStyle(
     fontSize=14
 )
 document_name = "MBTA Tunnel Vent and System Assessment.pdf"
+cs_colors = [colors.lightgreen, colors.yellow, colors.orange, colors.pink]
 
 for orientation in ExifTags.TAGS.keys():
     if ExifTags.TAGS[orientation] == 'Orientation':
@@ -47,14 +47,15 @@ class RotatedImage(Image):
 
 def create_equipment_table(equip):
     path = equip.image_path
+    temp_path = path[:path.rfind("\\", 0, -1)] + "/temp/" + path[path.rfind("\\", 0, -1):]
 
     # fix rotated images
     with PIL.Image.open(path) as img:
         exif = img._getexif()
     if exif[orientation] == 6:
-        image = RotatedImage(path, width=2.5*inch, height=3*inch, kind="proportional")
+        image = RotatedImage(temp_path, width=2.5*inch, height=3*inch, kind="proportional")
     else:
-        image = Image(path, width=2.25*inch, height=2.5*inch, kind="proportional")
+        image = Image(temp_path, width=2.25*inch, height=2.5*inch, kind="proportional")
 
     # infomation paragraphs
     descr_p = Paragraph(equip.descr)
@@ -64,14 +65,14 @@ def create_equipment_table(equip):
     data = [
         ["  " + equip.id, Paragraph('<b>Room:</b>'), equip.room, Paragraph('<b>Equipment ID:</b>'), equip.equipment_id,
          Paragraph('<b>CS:</b> %s' % equip.cs)],
-        [equip.title, "", "", "", image],
+        [Paragraph('<b>ISSUE: %s</b>' % equip.title), "", "", "", image],
         [descr_p],
-        [equip.sol_title],
+        [Paragraph('<b>SOLUTION: %s</b>' % equip.sol_title)],
         [sol_text_p],
         ]
     t = Table(data, style=[('ALIGN', (0, 0), (-1, 0), 'CENTER'),  # align top row centered
-                           ('ALIGN', (0, 1), (-1, 1), 'CENTER'),  # align title and photo
-                           ('ALIGN', (0, 3), (0, 3), 'CENTER'),  # align solution title centered
+                           ('ALIGN', (3, 1), (-1, 1), 'CENTER'),  # align title and photo
+                           # ('ALIGN', (0, 3), (0, 3), 'CENTER'),  # align solution title centered
                            ('VALIGN', (0, 2), (0, 2), 'TOP'),
                            ('VALIGN', (0, 4), (0, 4), 'TOP'),
                            ('VALIGN', (4, 1), (-1, -1), 'CENTER'),
@@ -83,8 +84,7 @@ def create_equipment_table(equip):
                            ('SPAN', (0, 3), (3, 3)),  # span sol title
                            ('SPAN', (0, 4), (3, 4)),  # span sol descr
                            ('SPAN', (-2, 1), (-1, -1)),  # span picture box
-                           ('BACKGROUND', (0, 1), (3, 1), colors.pink),
-                           ('BACKGROUND', (0, 3), (3, 3), colors.lightgreen),
+                           ('BACKGROUND', (-1, 0), (-1, 0), cs_colors[equip.cs-1])
                            ],
               colWidths=[.4 * inch, .75 * inch, 2.3 * inch, 1.25 * inch, 1.9 * inch, .6 * inch],
               rowHeights=[.25 * inch, .25 * inch, 1.25 * inch, .25 * inch, 1 * inch])
@@ -95,7 +95,7 @@ def create_equipment_table(equip):
 def create_report_table(loc):
     data = [
         [Paragraph('<b>RAIL LINE:</b> %s' % loc.rail),
-         Paragraph('<b>INSPECTION DATE:</b> %s' % loc.insp_date.strftime("%m/%d/%Y"))],
+         Paragraph('<b>INSPECTION DATE:</b> %s' % loc.insp_date)],
         [Paragraph('<b>LOCATION:</b> %s' % loc.location)],
     ]
     t = Table(data)
@@ -140,14 +140,23 @@ def build_document(sheet):
     Story.append(t)  # add location information
     Story.append(Spacer(1, 0.2 * inch))
 
-    for row in sheet.df.itertuples():  # for row in spreadsheet
-        e = Equipment.generate_equip(sheet.folder, row)
-        t = create_equipment_table(e)
+    # compress images into temp folder
+    sheet.compress_pictures()
 
-        Story.append(KeepTogether(t))
-        Story.append(Spacer(1, 0.1 * inch))
+    for i in range(5):
+        Story.append(Paragraph(sheet.fp.sheet_names[i+1], style=styleT))
+
+        for row in sheet.fp.parse(i+1).itertuples():  # for row in spreadsheet
+            e = Equipment.generate_equip(sheet.folder, row)
+            t = create_equipment_table(e)
+
+            Story.append(KeepTogether(t))
+            Story.append(Spacer(1, 0.1 * inch))
 
     doc.build(Story, onFirstPage=first_page_format, onLaterPages=first_page_format)
+
+    # delete compressed image temp folder
+    sheet.delete_compressed_pictures()
 
 
 # checks if document already exists in sheet's folder

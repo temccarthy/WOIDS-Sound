@@ -1,15 +1,17 @@
+import datetime
 import math
 import pandas as pd
 import os
 import glob
-
+import PIL.Image
+import shutil
 
 # Basic spreadsheet info class
 class LocationInfo:
     def __init__(self, rail, location, insp_date):
         self.rail = rail
         self.location = location
-        self.insp_date = insp_date
+        self.insp_date = insp_date.strftime("%m/%d/%Y") if isinstance(insp_date, datetime.datetime) else ""
 
 
 # Piece of equipment class
@@ -20,7 +22,10 @@ class Equipment:
         self.id = discipline + str(num)
         self.room = room
         self.equipment_id = equipment_id
-        self.cs = cs
+        try:
+            self.cs = min(max(int(cs), 0), 4)
+        except Exception:
+            self.cs = 0
         self.title = title
         self.descr = descr
         self.sol_title = sol_title
@@ -33,11 +38,8 @@ class Equipment:
         # deal with empty cells in sheet
         tup = tuple("" if isinstance(i, float) and math.isnan(i) else i for i in tup)
 
-        # turn CS into integers or "" if empty
-        tup = tup[:6] + ("" if isinstance(tup[6], str) else int(tup[6]),) + tup[7:]
-
         # calculate picture path
-        picture_path = glob.glob(folder + "/" + tup[3] + ".*")[0]
+        picture_path = glob.glob(folder + "/" + tup[3][:1] + " (" + tup[3][1:] + ")" + ".*")[0]
 
         return Equipment(tup[1], tup[2], tup[4], tup[5], tup[6], tup[7], tup[8], tup[9], tup[10], picture_path)
 
@@ -48,25 +50,34 @@ class Sheet:
         self.path = path
         self.folder = self.path[:self.path.rfind("/", 0, -1)]
 
-        fp = pd.read_excel(path)
-        self.location = LocationInfo(fp.columns[2], fp.iloc[0, 2], fp.iloc[1, 2])
-
-        for tup in fp.itertuples():
-            if type(tup[1]) == float:  # skip empty cells
-                continue
-            elif tup[1].startswith("Discipline"):  # find top of table
-                skip = tup[0] + 1
-                break
-        self.df = pd.read_excel(path, skiprows=skip, usecols="A:J")
+        self.fp = pd.ExcelFile(path)
+        loc_sheet = self.fp.parse(0)
+        self.location = LocationInfo(loc_sheet.columns[1], loc_sheet.iloc[0, 1], loc_sheet.iloc[1, 1])
 
     def check_pictures(self):
         missing_pics = []
-        for row in self.df.itertuples():
-            files = glob.glob(self.folder + "/" + row[3] + ".*")
-            if len(files) == 0:
-                missing_pics.append(row[3])
+        for i in range(5):
+            for row in self.fp.parse(i+1).itertuples():
+                files = glob.glob(self.folder + "/" + row[3][:1] + " (" + row[3][1:] + ")" + ".*")
+                if len(files) == 0:
+                    missing_pics.append(row[3])
 
         return missing_pics
+
+    def compress_pictures(self):
+        if os.path.isdir(os.path.join(self.folder, "temp")):
+            self.delete_compressed_pictures()
+
+        os.mkdir(os.path.join(self.folder, "temp"))
+        for file in os.listdir(self.folder):
+            try:
+                with PIL.Image.open(os.path.join(self.folder, file)) as img:
+                    img.save(os.path.join(self.folder, "temp", file), optimize=True, quality=30)
+            except Exception:
+                pass
+
+    def delete_compressed_pictures(self):
+        shutil.rmtree(os.path.join(self.folder, "temp"))
 
     @staticmethod
     def check_template_exists(path):
