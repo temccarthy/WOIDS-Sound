@@ -30,7 +30,7 @@ styleT = ParagraphStyle(
     fontSize=14
 )
 document_name = "DSTT NTIS Inspection Report.pdf"
-cs_colors = [colors.lightgreen, colors.yellow, colors.orange, colors.pink]
+# cs_colors = [colors.lightgreen, colors.yellow, colors.orange, colors.pink]
 
 for orientation in ExifTags.TAGS.keys():
     if ExifTags.TAGS[orientation] == 'Orientation':
@@ -58,17 +58,17 @@ def create_equipment_table(equip):
         image = Image(temp_path, width=2.25*inch, height=2.5*inch, kind="proportional")
 
     # infomation paragraphs
-    descr_p = Paragraph(equip.descr)
-    descr_p.wrap(4.75 * inch, HEIGHT)
-    sol_text_p = Paragraph(equip.sol_text)
-    sol_text_p.wrap(4.75 * inch, HEIGHT)
+    notes = Paragraph(equip.notes)
+    notes.wrap(4.75 * inch, HEIGHT)
+    # sol_text_p = Paragraph(equip.sol_text)
+    # sol_text_p.wrap(4.75 * inch, HEIGHT)
     data = [
-        ["  " + equip.id, Paragraph('<b>Room:</b>'), equip.room, Paragraph('<b>Equipment ID:</b>'), equip.equipment_id,
-         Paragraph('<b>CS:</b> %s' % equip.cs)],
-        [Paragraph('<b>ISSUE: %s</b>' % equip.title), "", "", "", image],
-        [descr_p],
-        [Paragraph('<b>SOLUTION: %s</b>' % equip.sol_title)],
-        [sol_text_p],
+        ["  " + equip.id, Paragraph('<b>NB/SB/Room #:</b>'), equip.room,
+         Paragraph('<b>Component:</b>'), equip.component],
+        [Paragraph('<b>Deficiency/Notes: </b>'), "", "", "", image],
+        [notes],
+        [],
+        [],
         ]
     t = Table(data, style=[('ALIGN', (0, 0), (-1, 0), 'CENTER'),  # align top row centered
                            ('ALIGN', (3, 1), (-1, 1), 'CENTER'),  # align title and photo
@@ -84,7 +84,7 @@ def create_equipment_table(equip):
                            ('SPAN', (0, 3), (3, 3)),  # span sol title
                            ('SPAN', (0, 4), (3, 4)),  # span sol descr
                            ('SPAN', (-2, 1), (-1, -1)),  # span picture box
-                           ('BACKGROUND', (-1, 0), (-1, 0), cs_colors[equip.cs-1])
+                           # ('BACKGROUND', (-1, 0), (-1, 0), cs_colors[equip.cs-1])
                            ],
               colWidths=[.4 * inch, .75 * inch, 2.3 * inch, 1.25 * inch, 1.9 * inch, .6 * inch],
               rowHeights=[.25 * inch, .25 * inch, 1.25 * inch, .25 * inch, 1 * inch])
@@ -128,22 +128,21 @@ def build_document(sheet):
                             title="DSTT NTIS Inspection Report", author="WSP")  # start document template
     Story = []
 
-    t = create_report_table(sheet.station)
+    t = create_report_table(sheet.location)
     Story.append(t)  # add location information
     Story.append(Spacer(1, 0.2 * inch))
 
     # compress images into temp folder
     sheet.compress_pictures()
 
-    for i in range(5):
-        Story.append(Paragraph(sheet.fp.sheet_names[i+1], style=styleT))
+    Story.append(Paragraph(sheet.fp.sheet_names[1], style=styleT))
 
-        for row in sheet.fp.parse(i+1).itertuples():  # for row in spreadsheet
-            e = Equipment.generate_equip(sheet.folder, row)
-            t = create_equipment_table(e)
+    for row in sheet.fp.parse(1).itertuples():  # for row in spreadsheet
+        e = Equipment.generate_equip(sheet.folder, row)
+        t = create_equipment_table(e)
 
-            Story.append(KeepTogether(t))
-            Story.append(Spacer(1, 0.1 * inch))
+        Story.append(KeepTogether(t))
+        Story.append(Spacer(1, 0.1 * inch))
 
     doc.build(Story, onFirstPage=first_page_format, onLaterPages=first_page_format)
 

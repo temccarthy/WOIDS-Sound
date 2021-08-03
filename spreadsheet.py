@@ -17,13 +17,12 @@ class LocationInfo:
 
 # Piece of equipment class
 class Equipment:
-    def __init__(self, id, room, component, deficiency, notes, picture_path):
+    def __init__(self, id, room, component, notes, image_path):
         self.id = str(id)
         self.room = room
         self.component = component
-        self.deficiency = deficiency
         self.notes = notes
-        self.picture_path = picture_path
+        self.image_path = image_path
 
     # generates an equipment given a row in the sheet
     @staticmethod
@@ -32,9 +31,9 @@ class Equipment:
         tup = tuple("" if isinstance(i, float) and math.isnan(i) else i for i in tup)
 
         # calculate picture path
-        picture_path = glob.glob(folder + "/" + tup[1] + ".*")[0]
+        image_path = glob.glob(folder + "/" + str(tup[1]) + ".*")[0]
 
-        return Equipment(tup[1], tup[2], tup[3], tup[4], tup[5], picture_path)
+        return Equipment(tup[1], tup[2], tup[3], tup[4], image_path)
 
 
 # holds spreadsheet dataframe
