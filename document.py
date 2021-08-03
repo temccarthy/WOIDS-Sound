@@ -21,7 +21,7 @@ def resource_path(relative_path):
 # setup variables
 WIDTH, HEIGHT = letter
 styles = getSampleStyleSheet()
-mbta_logo = resource_path("resources/MBTA_logo_text.png")
+seattle_logo = resource_path("resources/web-st-logo-horizontal-blue-rgb.png")
 wsp_logo = resource_path("resources/img-png-wsp-red.png")
 styleN = styles["Normal"]
 styleT = ParagraphStyle(
@@ -107,7 +107,7 @@ def first_page_format(canvas, doc):
     canvas.saveState()
 
     # setup header
-    canvas.drawImage(mbta_logo, .45 * inch, HEIGHT - .05 * inch, width=100, height=19)
+    canvas.drawImage(seattle_logo, .45 * inch, HEIGHT - .05 * inch, width=100, height=19)
     canvas.drawImage(wsp_logo, WIDTH - 1.65 * inch, HEIGHT - .2 * inch, width=70, height=33)
     p = Paragraph("DSTT NTIS INSPECTION REPORT", styleT)
     w, h = p.wrap(inch * 4, HEIGHT)
@@ -120,14 +120,6 @@ def first_page_format(canvas, doc):
     canvas.drawRightString(WIDTH - inch, .90 * inch, "Contract No. Z94PS10")
     canvas.drawRightString(WIDTH - inch, .75 * inch, "Task Order: 03")
     canvas.restoreState()
-
-
-# # formatting for all other pages
-# def later_page_format(canvas, doc):
-#     canvas.saveState()
-#     canvas.setFont('Times-Roman',9)
-#     canvas.drawString(inch, 0.75 * inch, "Page %d" % doc.page)
-#     canvas.restoreState()
 
 
 # assembles the document and saves it to the sheet's location
