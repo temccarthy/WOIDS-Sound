@@ -98,7 +98,7 @@ class MainWindow(QMainWindow):
                 self.info_box.setText(self.info_box.toPlainText() + "Template not copied\n")
                 return
 
-        copy(resource_path("resources/MBTA_TEMPLATE.xlsx"), path)
+        copy(resource_path("resources/SEATTLE_TEMPLATE.xlsx"), path)
         self.info_box.setText(self.info_box.toPlainText() + "Template copied!\n")
 
 

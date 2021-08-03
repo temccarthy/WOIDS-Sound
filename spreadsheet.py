@@ -6,12 +6,13 @@ import glob
 import PIL.Image
 import shutil
 
+
 # Basic spreadsheet info class
 class LocationInfo:
-    def __init__(self, rail, location, insp_date):
-        self.rail = rail
-        self.location = location
-        self.insp_date = insp_date.strftime("%m/%d/%Y") if isinstance(insp_date, datetime.datetime) else ""
+    def __init__(self, loc, station, insp_date):
+        self.loc = loc
+        self.station = station
+        self.insp_date = insp_date
 
 
 # Piece of equipment class
@@ -81,6 +82,6 @@ class Sheet:
 
     @staticmethod
     def check_template_exists(path):
-        template_name = "MBTA_TEMPLATE.xlsx"
+        template_name = "SEATTLE_TEMPLATE.xlsx"
         matches = glob.glob(os.path.join(path, template_name))
         return len(matches) != 0

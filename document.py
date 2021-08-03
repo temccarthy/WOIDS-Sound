@@ -29,7 +29,7 @@ styleT = ParagraphStyle(
     parent=styles['Title'],
     fontSize=14
 )
-document_name = "MBTA Tunnel Vent and System Assessment.pdf"
+document_name = "DSTT NTIS Inspection Report.pdf"
 cs_colors = [colors.lightgreen, colors.yellow, colors.orange, colors.pink]
 
 for orientation in ExifTags.TAGS.keys():
@@ -94,9 +94,9 @@ def create_equipment_table(equip):
 # creates report table for top of document
 def create_report_table(loc):
     data = [
-        [Paragraph('<b>RAIL LINE:</b> %s' % loc.rail),
+        [Paragraph('<b>LOCATION:</b> %s' % loc.loc),
          Paragraph('<b>INSPECTION DATE:</b> %s' % loc.insp_date)],
-        [Paragraph('<b>LOCATION:</b> %s' % loc.location)],
+        [Paragraph('<b>STATION:</b> %s' % loc.station)],
     ]
     t = Table(data)
     return t
@@ -109,7 +109,7 @@ def first_page_format(canvas, doc):
     # setup header
     canvas.drawImage(mbta_logo, .45 * inch, HEIGHT - .05 * inch, width=100, height=19)
     canvas.drawImage(wsp_logo, WIDTH - 1.65 * inch, HEIGHT - .2 * inch, width=70, height=33)
-    p = Paragraph("MBTA TUNNEL VENTILATION FACILITY AND SYSTEM ASSESSMENT", styleT)
+    p = Paragraph("DSTT NTIS INSPECTION REPORT", styleT)
     w, h = p.wrap(inch * 4, HEIGHT)
     p.drawOn(canvas, (WIDTH - 16) / 2 - w / 2, HEIGHT - .25 - h / 2)
 
@@ -133,10 +133,10 @@ def first_page_format(canvas, doc):
 # assembles the document and saves it to the sheet's location
 def build_document(sheet):
     doc = SimpleDocTemplate(os.path.join(sheet.folder, document_name), pageSize=letter,
-                            title="MBTA Tunnel Vent and System Assessment", author="WSP")  # start document template
+                            title="DSTT NTIS Inspection Report", author="WSP")  # start document template
     Story = []
 
-    t = create_report_table(sheet.location)
+    t = create_report_table(sheet.station)
     Story.append(t)  # add location information
     Story.append(Spacer(1, 0.2 * inch))
 
