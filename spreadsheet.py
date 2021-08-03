@@ -17,21 +17,13 @@ class LocationInfo:
 
 # Piece of equipment class
 class Equipment:
-    def __init__(self, discipline, num, room, equipment_id, cs, title, descr, sol_title, sol_text, image_path):
-        self.discipline = discipline
-        self.num = num
-        self.id = discipline + str(num)
+    def __init__(self, id, room, component, deficiency, notes, picture_path):
+        self.id = str(id)
         self.room = room
-        self.equipment_id = equipment_id
-        try:
-            self.cs = min(max(int(cs), 0), 4)
-        except Exception:
-            self.cs = 0
-        self.title = title
-        self.descr = descr
-        self.sol_title = sol_title
-        self.sol_text = sol_text
-        self.image_path = image_path
+        self.component = component
+        self.deficiency = deficiency
+        self.notes = notes
+        self.picture_path = picture_path
 
     # generates an equipment given a row in the sheet
     @staticmethod
@@ -40,9 +32,9 @@ class Equipment:
         tup = tuple("" if isinstance(i, float) and math.isnan(i) else i for i in tup)
 
         # calculate picture path
-        picture_path = glob.glob(folder + "/" + tup[3][:1] + " (" + tup[3][1:] + ")" + ".*")[0]
+        picture_path = glob.glob(folder + "/" + tup[1] + ".*")[0]
 
-        return Equipment(tup[1], tup[2], tup[4], tup[5], tup[6], tup[7], tup[8], tup[9], tup[10], picture_path)
+        return Equipment(tup[1], tup[2], tup[3], tup[4], tup[5], picture_path)
 
 
 # holds spreadsheet dataframe
@@ -57,11 +49,10 @@ class Sheet:
 
     def check_pictures(self):
         missing_pics = []
-        for i in range(5):
-            for row in self.fp.parse(i+1).itertuples():
-                files = glob.glob(self.folder + "/" + row[3][:1] + " (" + row[3][1:] + ")" + ".*")
-                if len(files) == 0:
-                    missing_pics.append(row[3])
+        for row in self.fp.parse(1).itertuples():
+            files = glob.glob(self.folder + "/" + str(row[1]) + ".*")
+            if len(files) == 0:
+                missing_pics.append(row[1])
 
         return missing_pics
 
