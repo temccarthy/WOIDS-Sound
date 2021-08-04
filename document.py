@@ -3,6 +3,7 @@ from PIL import ExifTags
 from reportlab.lib import colors, utils
 from reportlab.lib.pagesizes import letter
 from reportlab.lib.units import inch
+from reportlab.pdfbase.pdfmetrics import stringWidth
 from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, KeepTogether
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from datetime import date
@@ -29,8 +30,16 @@ styleT = ParagraphStyle(
     parent=styles['Title'],
     fontSize=14
 )
+styleS = ParagraphStyle(
+    'newSubTitle',
+    parent=styles['Normal'],
+    fontSize=11,
+    alignment=1
+)
 document_name = "DSTT NTIS Inspection Report.pdf"
 # cs_colors = [colors.lightgreen, colors.yellow, colors.orange, colors.pink]
+
+inspection_date = ""
 
 for orientation in ExifTags.TAGS.keys():
     if ExifTags.TAGS[orientation] == 'Orientation':
@@ -102,6 +111,7 @@ def create_report_table(loc):
 
 # formatting for the first page
 def first_page_format(canvas, doc):
+    global inspection_date
     canvas.saveState()
 
     # setup header
@@ -111,29 +121,34 @@ def first_page_format(canvas, doc):
     w, h = p.wrap(inch * 4, HEIGHT)
     p.drawOn(canvas, (WIDTH - 16) / 2 - w / 2, HEIGHT - .25 - h / 2)
 
+    p2 = Paragraph('<b>INSPECTION DATE:</b> %s' % inspection_date, styleS)
+    w2, h2 = p2.wrap(inch * 4, HEIGHT)
+    print(WIDTH, w2)
+    p2.drawOn(canvas, (WIDTH - 16) / 2 - w2 / 2, HEIGHT - 20)
+
     # setup footer
     canvas.setFont('Times-Roman', 9)
-    canvas.drawString(.75 * inch, .75 * inch, "%s" % date.today().strftime("%B %d, %Y"))
+    canvas.drawString(.75 * inch, .75 * inch, "August 27, 2021")
     canvas.drawCentredString((WIDTH - 16) / 2, .75 * inch, "Page %d" % doc.page)
     canvas.drawRightString(WIDTH - inch, .90 * inch, "Contract No. 160415P-01")
-    canvas.drawRightString(WIDTH - inch, .75 * inch, "Task Order: 17.04.02")
+    canvas.drawRightString(WIDTH - inch, .75 * inch, "Task Order: 17")
     canvas.restoreState()
 
 
 # assembles the document and saves it to the sheet's location
 def build_document(sheet):
+    global inspection_date
     doc = SimpleDocTemplate(os.path.join(sheet.folder, document_name), pageSize=letter,
                             title="DSTT NTIS Inspection Report", author="WSP")  # start document template
     Story = []
 
-    t = create_report_table(sheet.location)
-    Story.append(t)  # add location information
-    Story.append(Spacer(1, 0.2 * inch))
+    inspection_date = sheet.location.insp_date
+    # t = create_report_table(sheet.location)
+    # Story.append(t)  # add location information
+    # Story.append(Spacer(1, 0.2 * inch))
 
     # compress images into temp folder
     sheet.compress_pictures()
-
-    Story.append(Paragraph(sheet.fp.sheet_names[1], style=styleT))
 
     for row in sheet.fp.parse(1).itertuples():  # for row in spreadsheet
         e = Equipment.generate_equip(sheet.folder, row)
