@@ -66,15 +66,15 @@ def create_equipment_table(equip):
     else:
         image = Image(temp_path, width=2.25*inch, height=2.5*inch, kind="proportional")
 
-    # infomation paragraphs
+    # information paragraphs
     notes = Paragraph(equip.notes)
     notes.wrap(4.75 * inch, HEIGHT)
     # sol_text_p = Paragraph(equip.sol_text)
     # sol_text_p.wrap(4.75 * inch, HEIGHT)
     data = [
-        ["  " + equip.id, Paragraph('<b>NB/SB/Room #:</b>'), equip.room,
-         Paragraph('<b>Component:</b>'), equip.component],
-        [Paragraph('<b>Deficiency/Notes: </b>'), "", "", "", image],
+        [equip.id, Paragraph('<b>Location:</b> %s' % equip.room), Paragraph('<b>Station:</b> %s' % equip.station),
+         Paragraph('<b>Component:</b> %s' % equip.component)],
+        [Paragraph('<b>Deficiency/Notes: </b>'), "", "", image],
         [notes],
         ]
     t = Table(data, style=[('ALIGN', (0, 0), (-1, 0), 'CENTER'),  # align top row centered
@@ -85,15 +85,15 @@ def create_equipment_table(equip):
                            ('VALIGN', (-1, 1), (-1, -1), 'CENTER'),
                            ('BOX', (0, 0), (-1, -1), 1, colors.black),
                            ('BOX', (0, 0), (-1, 0), 1, colors.black),
-                           ('GRID', (0, 1), (3, -1), 1, colors.black),
-                           ('SPAN', (0, 1), (3, 1)),  # span title
-                           ('SPAN', (0, 2), (3, 2)),  # span descr
+                           ('GRID', (0, 0), (2, -1), 1, colors.black),
+                           ('SPAN', (0, 1), (-2, 1)),  # span title
+                           ('SPAN', (0, 2), (-2, 2)),  # span descr
                            # ('SPAN', (0, 3), (3, 3)),  # span sol title
                            # ('SPAN', (0, 4), (3, 4)),  # span sol descr
                            ('SPAN', (-1, 1), (-1, -1)),  # span picture box
                            # ('BACKGROUND', (-1, 0), (-1, 0), cs_colors[equip.cs-1])
                            ],
-              colWidths=[.4 * inch, 1.25 * inch, (2.3-.3) * inch, 1.05 * inch, 2.5 * inch],
+              colWidths=[.4 * inch, 2.25 * inch, 2.05 * inch, 2.5 * inch],
               rowHeights=[.25 * inch, .25 * inch, 2.5 * inch])
     return t
 
@@ -121,9 +121,9 @@ def first_page_format(canvas, doc):
     w, h = p.wrap(inch * 4, HEIGHT)
     p.drawOn(canvas, (WIDTH - 16) / 2 - w / 2, HEIGHT - .25 - h / 2)
 
+    # setup subheader
     p2 = Paragraph('<b>INSPECTION DATE:</b> %s' % inspection_date, styleS)
     w2, h2 = p2.wrap(inch * 4, HEIGHT)
-    print(WIDTH, w2)
     p2.drawOn(canvas, (WIDTH - 16) / 2 - w2 / 2, HEIGHT - 20)
 
     # setup footer

@@ -9,16 +9,15 @@ import shutil
 
 # Basic spreadsheet info class
 class LocationInfo:
-    def __init__(self, loc, station, insp_date):
-        self.loc = loc
-        self.station = station
+    def __init__(self, insp_date):
         self.insp_date = insp_date
 
 
 # Piece of equipment class
 class Equipment:
-    def __init__(self, id, room, component, notes, image_path):
+    def __init__(self, id, station, room, component, notes, image_path):
         self.id = str(id)
+        self.station = station
         self.room = room
         self.component = component
         self.notes = notes
@@ -33,7 +32,7 @@ class Equipment:
         # calculate picture path
         image_path = glob.glob(folder + "/" + str(tup[1]) + ".*")[0]
 
-        return Equipment(tup[1], tup[2], tup[3], tup[4], image_path)
+        return Equipment(tup[1], tup[2], tup[3], tup[4], tup[5], image_path)
 
 
 # holds spreadsheet dataframe
@@ -44,7 +43,7 @@ class Sheet:
 
         self.fp = pd.ExcelFile(path)
         loc_sheet = self.fp.parse(0)
-        self.location = LocationInfo(loc_sheet.columns[1], loc_sheet.iloc[0, 1], loc_sheet.iloc[1, 1])
+        self.location = LocationInfo(loc_sheet.columns[1])
 
     def check_pictures(self):
         missing_pics = []
