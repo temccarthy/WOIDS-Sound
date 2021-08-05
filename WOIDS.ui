@@ -17,7 +17,7 @@
    </sizepolicy>
   </property>
   <property name="windowTitle">
-   <string>WOIDS</string>
+   <string>WOIDS-Seattle</string>
   </property>
   <property name="windowIcon">
    <iconset>
@@ -60,7 +60,7 @@
       </font>
      </property>
      <property name="text">
-      <string>WSP Optimized Inspection Data System</string>
+      <string>WSP Optimized Inspection Data System - SoundTransit</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
