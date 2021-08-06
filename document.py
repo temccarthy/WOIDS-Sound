@@ -54,7 +54,9 @@ class RotatedImage(Image):
         Image.draw(self)
 
 
+deficiency_ctr = 1
 def create_equipment_table(equip):
+    global deficiency_ctr
     path = equip.image_path
     temp_path = path[:path.rfind("\\", 0, -1)] + "/temp/" + path[path.rfind("\\", 0, -1):]
 
@@ -72,7 +74,7 @@ def create_equipment_table(equip):
     # sol_text_p = Paragraph(equip.sol_text)
     # sol_text_p.wrap(4.75 * inch, HEIGHT)
     data = [
-        [equip.id, Paragraph('<b>Location:</b> %s' % equip.room), Paragraph('<b>Station:</b> %s' % equip.station),
+        [deficiency_ctr, Paragraph('<b>Location:</b> %s' % equip.room), Paragraph('<b>Station:</b> %s' % equip.station),
          Paragraph('<b>Component:</b> %s' % equip.component)],
         [Paragraph('<b>Deficiency/Notes: </b>'), "", "", image],
         [notes],
@@ -93,8 +95,10 @@ def create_equipment_table(equip):
                            ('SPAN', (-1, 1), (-1, -1)),  # span picture box
                            # ('BACKGROUND', (-1, 0), (-1, 0), cs_colors[equip.cs-1])
                            ],
-              colWidths=[.4 * inch, 2.25 * inch, 2.05 * inch, 2.5 * inch],
+              colWidths=[.4 * inch, 1.25 * inch, 2.75 * inch, 2.75 * inch],
               rowHeights=[.25 * inch, .25 * inch, 2.5 * inch])
+
+    deficiency_ctr += 1
     return t
 
 
