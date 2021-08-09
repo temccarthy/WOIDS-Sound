@@ -41,6 +41,9 @@ document_name = "DSTT NTIS Inspection Report.pdf"
 
 inspection_date = ""
 
+# for incrementing deficiencies independent of id number
+deficiency_ctr = 1
+
 for orientation in ExifTags.TAGS.keys():
     if ExifTags.TAGS[orientation] == 'Orientation':
         break
@@ -50,40 +53,38 @@ for orientation in ExifTags.TAGS.keys():
 class RotatedImage(Image):
     def draw(self):
         self.canv.rotate(-90)
-        self.canv.translate(- self.drawWidth/2 - self.drawHeight/2, self.drawWidth/2-self.drawHeight/2)
+        self.canv.translate(- self.drawWidth / 2 - self.drawHeight / 2, self.drawWidth / 2 - self.drawHeight / 2)
         Image.draw(self)
 
 
-deficiency_ctr = 1
 def create_equipment_table(equip):
     global deficiency_ctr
     path = equip.image_path
-    temp_path = path[:path.rfind("\\", 0, -1)] + "/temp/" + path[path.rfind("\\", 0, -1):]
+    temp_path = path[:path.rfind("\\", 0, -1)] + "/temp/" + path[path.rfind("\\", 0, -1):] # for image compression
 
     # fix rotated images
     with PIL.Image.open(path) as img:
         exif = img._getexif()
-    if exif[orientation] == 6:
-        image = RotatedImage(temp_path, width=2.5*inch, height=3*inch, kind="proportional")
+    if exif[orientation] == 6:  # if image in portrait, un-rotate it
+        image = RotatedImage(temp_path, width=2.5 * inch, height=3 * inch, kind="proportional")
     else:
-        image = Image(temp_path, width=2.25*inch, height=2.5*inch, kind="proportional")
+        image = Image(temp_path, width=2.25 * inch, height=2.5 * inch, kind="proportional")
 
     # information paragraphs
     notes = Paragraph(equip.notes)
     notes.wrap(4.75 * inch, HEIGHT)
-    # sol_text_p = Paragraph(equip.sol_text)
-    # sol_text_p.wrap(4.75 * inch, HEIGHT)
+
+    # table layout
     data = [
         [deficiency_ctr, Paragraph('<b>Location:</b> %s' % equip.room), Paragraph('<b>Station:</b> %s' % equip.station),
          Paragraph('<b>Component:</b> %s' % equip.component)],
         [Paragraph('<b>Deficiency/Notes: </b>'), "", "", image],
         [notes],
-        ]
+    ]
+    # table styling
     t = Table(data, style=[('ALIGN', (0, 0), (-1, 0), 'CENTER'),  # align top row centered
                            ('ALIGN', (3, 1), (-1, 1), 'CENTER'),  # align title and photo
-                           # ('ALIGN', (0, 3), (0, 3), 'CENTER'),  # align solution title centered
                            ('VALIGN', (0, 2), (0, 2), 'TOP'),
-                           # ('VALIGN', (0, 4), (0, 4), 'TOP'),
                            ('VALIGN', (-1, 1), (-1, -1), 'CENTER'),
                            ('BOX', (0, 0), (-1, -1), 1, colors.black),
                            ('BOX', (0, 0), (-1, 0), 1, colors.black),

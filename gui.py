@@ -3,7 +3,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QLineEdit, Q
 from PyQt5 import uic
 import sys
 from shutil import copy
-from spreadsheet import Sheet
+from spreadsheet import Sheet, template_name
 from document import build_document, check_doc_exists, resource_path
 
 error_text = '<html><head/><body><p><span style=" color:#ef0000;">ERROR: Spreadsheet not found</span></p></body></html>'
@@ -98,7 +98,7 @@ class MainWindow(QMainWindow):
                 self.info_box.setText(self.info_box.toPlainText() + "Template not copied\n")
                 return
 
-        copy(resource_path("resources/SEATTLE_TEMPLATE.xlsx"), path)
+        copy(resource_path("resources/" + template_name), path)
         self.info_box.setText(self.info_box.toPlainText() + "Template copied!\n")
 
 

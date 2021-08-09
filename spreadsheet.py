@@ -5,6 +5,8 @@ import glob
 import PIL.Image
 import shutil
 
+template_name = "SEATTLE_TEMPLATE.xlsx"
+
 
 # Basic spreadsheet info class
 class LocationInfo:
@@ -70,6 +72,5 @@ class Sheet:
 
     @staticmethod
     def check_template_exists(path):
-        template_name = "SEATTLE_TEMPLATE.xlsx"
         matches = glob.glob(os.path.join(path, template_name))
         return len(matches) != 0
