@@ -1,7 +1,11 @@
-WSP Optimized Inspection Data System - SoundTransit
+# WSP Optimized Inspection Data System (WOIDS) - SoundTransit
 
-Combines a spreadsheet with a group of images into 1 PDF report
+For a full write up, see https://github.com/temccarthy/WOIDS
 
-to install proper modules, you should run `python -m venv env` then `pip install -r requirements.txt`
+## Formatting Differences
+WOIDS-Sound is slightly different from the first WOIDS in that the picture name formatting is simpler: spreadsheet 
+entries need a number for their ID, and the images should be named that number. See below for examples
 
-build exe with `pyinstaller --onefile gui.spec`
+![Id format](link1)
+
+![Image name format](link2)

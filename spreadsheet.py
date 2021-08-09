@@ -49,7 +49,7 @@ class Sheet:
         for row in self.fp.parse(1).itertuples():
             files = glob.glob(self.folder + "/" + str(row[1]) + ".*")
             if len(files) == 0:
-                missing_pics.append(row[1])
+                missing_pics.append(str(row[1]))
 
         return missing_pics
 
