@@ -1,4 +1,3 @@
-import datetime
 import math
 import pandas as pd
 import os
@@ -6,30 +5,23 @@ import glob
 import PIL.Image
 import shutil
 
+template_name = "SEATTLE_TEMPLATE.xlsx"
+
+
 # Basic spreadsheet info class
 class LocationInfo:
-    def __init__(self, rail, location, insp_date):
-        self.rail = rail
-        self.location = location
-        self.insp_date = insp_date.strftime("%m/%d/%Y") if isinstance(insp_date, datetime.datetime) else ""
+    def __init__(self, insp_date):
+        self.insp_date = insp_date
 
 
 # Piece of equipment class
 class Equipment:
-    def __init__(self, discipline, num, room, equipment_id, cs, title, descr, sol_title, sol_text, image_path):
-        self.discipline = discipline
-        self.num = num
-        self.id = discipline + str(num)
+    def __init__(self, id, station, room, component, notes, image_path):
+        self.id = str(id)
+        self.station = station
         self.room = room
-        self.equipment_id = equipment_id
-        try:
-            self.cs = min(max(int(cs), 0), 4)
-        except Exception:
-            self.cs = 0
-        self.title = title
-        self.descr = descr
-        self.sol_title = sol_title
-        self.sol_text = sol_text
+        self.component = component
+        self.notes = notes
         self.image_path = image_path
 
     # generates an equipment given a row in the sheet
@@ -39,9 +31,9 @@ class Equipment:
         tup = tuple("" if isinstance(i, float) and math.isnan(i) else i for i in tup)
 
         # calculate picture path
-        picture_path = glob.glob(folder + "/" + tup[3][:1] + " (" + tup[3][1:] + ")" + ".*")[0]
+        image_path = glob.glob(folder + "/" + str(tup[1]) + ".*")[0]
 
-        return Equipment(tup[1], tup[2], tup[4], tup[5], tup[6], tup[7], tup[8], tup[9], tup[10], picture_path)
+        return Equipment(tup[1], tup[2], tup[3], tup[4], tup[5], image_path)
 
 
 # holds spreadsheet dataframe
@@ -52,15 +44,14 @@ class Sheet:
 
         self.fp = pd.ExcelFile(path)
         loc_sheet = self.fp.parse(0)
-        self.location = LocationInfo(loc_sheet.columns[1], loc_sheet.iloc[0, 1], loc_sheet.iloc[1, 1])
+        self.location = LocationInfo(loc_sheet.columns[1])
 
     def check_pictures(self):
         missing_pics = []
-        for i in range(5):
-            for row in self.fp.parse(i+1).itertuples():
-                files = glob.glob(self.folder + "/" + row[3][:1] + " (" + row[3][1:] + ")" + ".*")
-                if len(files) == 0:
-                    missing_pics.append(row[3])
+        for row in self.fp.parse(1).itertuples():
+            files = glob.glob(self.folder + "/" + str(row[1]) + ".*")
+            if len(files) == 0:
+                missing_pics.append(str(row[1]))
 
         return missing_pics
 
@@ -81,6 +72,5 @@ class Sheet:
 
     @staticmethod
     def check_template_exists(path):
-        template_name = "MBTA_TEMPLATE.xlsx"
         matches = glob.glob(os.path.join(path, template_name))
         return len(matches) != 0

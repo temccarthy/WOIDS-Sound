@@ -1,9 +1,9 @@
 /env 
 /.idea
-/resources
 /__pycache__
 /build
 /dist
+/test
 
 *.pdf
 *.pyo
